@@ -74,24 +74,3 @@ Web Scraping: BeautifulSoup, Scrapy, or Selenium for scraping car data
 Database: SQLite or PostgreSQL to store scraped data (you can scale it to any SQL or NoSQL database as needed)
 Testing: Pytest (Python) for testing API endpoints and business logic
 Deployment: Heroku / Docker / AWS for easy deployment and scaling
-
-## Directory Structure
-car_recommendation/
-│── backend/
-│   ├── app.py  # Flask or FastAPI API
-│   ├── models.py  # Database models
-│   ├── scraper/  # Web scraping scripts
-│   │   ├── scrape_cargurus.py
-│   │   ├── scrape_carscom.py
-│   ├── recommendation_engine.py  # Core algorithm
-│   ├── utils.py  # Helper functions
-│   ├── requirements.txt  # Dependencies
-│── data/
-│   ├── scraped_data.json  # Sample data storage
-│── tests/
-│   ├── test_scrapers.py
-│   ├── test_api.py
-│── docs/
-│   ├── README.md
-│── .gitignore
-│── Dockerfile  # Optional for deployment
