@@ -3,20 +3,75 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import random
+from fake_useragent import UserAgent
+import logging
 
-# Headers to mimic a browser
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-    'Referer': 'https://www.cargurus.com/',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive'
-}
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+def get_random_headers():
+    # Create a UserAgent object for random realistic user agents
+    try:
+        ua = UserAgent()
+        user_agent = ua.random
+    except:
+        # Fallback list of user agents if fake_useragent fails
+        user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        ]
+        user_agent = random.choice(user_agents)
+    
+    # More extensive and realistic headers
+    headers = {
+        'User-Agent': user_agent,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Referer': 'https://www.google.com/',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'cross-site',
+        'Sec-Fetch-User': '?1',
+        'Cache-Control': 'max-age=0',
+    }
+    return headers
+
+def human_like_delay():
+    """Simulate more realistic human browsing behavior with variable delays"""
+    # Base delay between 3-7 seconds
+    base_delay = random.uniform(3, 7)
+    
+    # Occasionally (20% chance) add a longer pause (10-15 seconds)
+    if random.random() < 0.2:
+        base_delay += random.uniform(10, 15)
+        
+    return base_delay
 
 def scrape_cargurus(base_url, max_pages=5):
     all_cars = []
     page = 1
+    
+    # Use a session to maintain cookies and other state
+    session = requests.Session()
+    
+    # Initial visit to homepage to get cookies
+    try:
+        logger.info("Visiting homepage to set initial cookies...")
+        home_resp = session.get("https://www.cargurus.com/", headers=get_random_headers())
+        if home_resp.status_code != 200:
+            logger.warning(f"Failed to access homepage: {home_resp.status_code}")
+    except Exception as e:
+        logger.error(f"Error accessing homepage: {e}")
+    
+    # Add a delay after homepage visit
+    time.sleep(human_like_delay())
     
     while page <= max_pages:
         # Construct URL with page parameter
@@ -28,95 +83,127 @@ def scrape_cargurus(base_url, max_pages=5):
             else:
                 url = f"{base_url}?page={page}"
         
-        print(f"Scraping page {page}...")
+        logger.info(f"Scraping page {page}...")
         
         try:
-            response = requests.get(url, headers=headers)
+            # Get new headers for each request
+            headers = get_random_headers()
+            
+            # Add a refer that looks like we're coming from previous pages
+            if page > 1:
+                prev_page_url = f"{base_url}{'&' if '?' in base_url else '?'}page={page-1}"
+                headers['Referer'] = prev_page_url
+            
+            # Make the request with the session
+            response = session.get(url, headers=headers, timeout=30)
+            
+            # Check response
+            if response.status_code == 403:
+                logger.error(f"Access forbidden (403) on page {page}. Detected as a bot.")
+                logger.info("Trying with different approach...")
+                
+                # Wait longer and try again with different headers
+                time.sleep(random.uniform(20, 30))
+                headers = get_random_headers()
+                headers['Referer'] = 'https://www.cargurus.com/'
+                response = session.get(url, headers=headers, timeout=30)
+                
+                if response.status_code == 403:
+                    logger.error("Still getting 403 error after retry.")
+                    break
             
             if response.status_code != 200:
-                print(f"Failed to retrieve page {page}: Status code {response.status_code}")
+                logger.error(f"Failed to retrieve page {page}: Status code {response.status_code}")
                 break
                 
             soup = BeautifulSoup(response.text, "html.parser")
             
-            # Find all card elements using the exact class from your example
+            # Check if we got a CAPTCHA or login page
+            if "captcha" in response.text.lower() or "robot" in response.text.lower():
+                logger.error("CAPTCHA or robot detection page encountered")
+                break
+                
+            # Find all card elements using more flexible selectors
             listing_containers = soup.select("div[data-testid='srp-tile-body']")
             
             if not listing_containers:
-                print(f"No listings found on page {page}")
-                break
+                logger.warning(f"No listings found on page {page}. Trying alternative selectors...")
                 
-            print(f"Found {len(listing_containers)} listings")
+                # Try alternative selectors
+                listing_containers = soup.select("div.cKGqZX, div.LIyLk")
+                
+                if not listing_containers:
+                    logger.warning("Still no listings found. This could mean the page structure has changed.")
+                    
+                    # Save the HTML for debugging
+                    with open(f"debug_page_{page}.html", "w", encoding="utf-8") as f:
+                        f.write(response.text)
+                    logger.info(f"Saved HTML to debug_page_{page}.html for inspection")
+                    break
+            
+            logger.info(f"Found {len(listing_containers)} listings")
             
             for container in listing_containers:
                 try:
                     car = {}
                     
-                    # Title - using the exact selector from your example
-                    title_elem = container.select_one("h4.WoAzt.dzuXc")
+                    # Title - trying multiple possible selectors
+                    title_elem = (container.select_one("h4.WoAzt.dzuXc") or 
+                                 container.select_one("h4[data-testid='listing-title']") or
+                                 container.select_one("h4.listing-title"))
                     if title_elem:
                         car["title"] = title_elem.text.strip()
                     
-                    # Price
-                    price_elem = container.select_one("h4[data-testid='srp-tile-price']")
+                    # Price - trying multiple possible selectors
+                    price_elem = (container.select_one("h4[data-testid='srp-tile-price']") or
+                                 container.select_one("span.price") or
+                                 container.select_one("h4.price"))
                     if price_elem:
                         car["price"] = price_elem.text.strip()
                     
                     # Mileage
-                    mileage_elem = container.select_one("p[data-testid='srp-tile-mileage']")
+                    mileage_elem = (container.select_one("p[data-testid='srp-tile-mileage']") or
+                                   container.select_one("p.mileage"))
                     if mileage_elem:
                         car["mileage"] = mileage_elem.text.strip()
                     
                     # Engine
-                    engine_elem = container.select_one("p[data-testid='seo-srp-tile-engine-display-name']")
+                    engine_elem = (container.select_one("p[data-testid='seo-srp-tile-engine-display-name']") or
+                                  container.select_one("p.engine"))
                     if engine_elem:
                         car["engine"] = engine_elem.text.strip()
                     
-                    # Features
-                    features_elem = container.select_one("div[data-testid='srp-tile-horizontal-truncated-list']")
-                    if features_elem:
-                        car["features"] = features_elem.text.strip()
-                    
-                    # Deal rating
-                    deal_rating_elem = container.select_one("div[data-testid='srp-tile-deal-rating'] span.x-nqd")
-                    if deal_rating_elem:
-                        car["deal_rating"] = deal_rating_elem.text.strip()
-                    
-                    # Monthly payment estimate
-                    monthly_payment_elem = container.select_one("div._monthlyPayment_2ixny_7 span")
-                    if monthly_payment_elem:
-                        car["monthly_payment"] = monthly_payment_elem.text.strip()
-                    
-                    # Phone number
-                    phone_elem = container.select_one("button[data-testid='button-phone-number']")
-                    if phone_elem:
-                        car["phone"] = phone_elem.text.strip()
-                    
-                    # Dealer/Sponsor information
-                    sponsor_elem = container.select_one("div[data-testid='srp-tile-eyebrow']")
-                    if sponsor_elem:
-                        car["dealer_info"] = sponsor_elem.text.strip()
+                    # More generic approach to extract text from various elements
+                    for elem in container.select("p, span, div"):
+                        text = elem.text.strip()
+                        if text and "mi" in text and "mileage" not in car:
+                            car["mileage"] = text
+                        elif text and ("L" in text or "cylinder" in text.lower()) and "engine" not in car:
+                            car["engine"] = text
                     
                     if car:  # Only add if we found some data
                         all_cars.append(car)
                 except Exception as e:
-                    print(f"Error parsing listing: {e}")
+                    logger.error(f"Error parsing listing: {e}")
             
             # Check for next page - look for the next page button
             next_button = soup.select_one("a[data-cg-ft='page-nav-next-page']")
             if not next_button or "disabled" in next_button.get("class", []):
-                print("No more pages available")
+                logger.info("No more pages available")
                 break
             
-            # Random delay between requests
-            delay = random.uniform(2, 5)
-            print(f"Waiting {delay:.2f} seconds before next request...")
+            # Human-like delay between requests
+            delay = human_like_delay()
+            logger.info(f"Waiting {delay:.2f} seconds before next request...")
             time.sleep(delay)
             
             page += 1
             
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Request error on page {page}: {e}")
+            break
         except Exception as e:
-            print(f"Error scraping page {page}: {e}")
+            logger.error(f"Error scraping page {page}: {e}")
             break
     
     return all_cars
@@ -125,22 +212,23 @@ if __name__ == "__main__":
     # Use the specific URL you provided
     url = "https://www.cargurus.com/Cars/inventorylisting/viewDetailsFilterViewInventoryListing.action?sourceContext=carGurusHomePageModel&entitySelectingHelper.selectedEntity=&zip=98037"
     
-    car_data = scrape_cargurus(url)
+    logger.info("Starting the scraper...")
+    car_data = scrape_cargurus(url, max_pages=3)
     
     if car_data:
-        print(f"\nSuccessfully scraped {len(car_data)} car listings")
+        logger.info(f"Successfully scraped {len(car_data)} car listings")
         
         # Save to CSV
         df = pd.DataFrame(car_data)
         df.to_csv('cargurus_car_data.csv', index=False, encoding='utf-8')
-        print(f"Data saved to cargurus_car_data.csv")
+        logger.info(f"Data saved to cargurus_car_data.csv")
         
         # Print first few entries as a sample
-        print("\nSample data:")
+        logger.info("Sample data:")
         for i, car in enumerate(car_data[:3], 1):
             print(f"Car {i}:")
             for k, v in car.items():
                 print(f"  {k}: {v}")
             print()
     else:
-        print("No car data was collected.")
+        logger.error("No car data was collected.")
