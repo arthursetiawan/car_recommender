@@ -26,7 +26,7 @@ def get_random_headers():
         ]
         user_agent = random.choice(user_agents)
     
-    # More extensive and realistic headers
+    # More extensive and realistic headers X
     headers = {
         'User-Agent': user_agent,
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
