@@ -96,7 +96,7 @@ def scrape_cargurus(base_url, max_pages=5):
                 prev_page_url = f"{base_url}{'&' if '?' in base_url else '?'}page={page-1}"
                 headers['Referer'] = prev_page_url
             
-            # Make the request with the session
+            # Make the request with the session hello
             response = session.get(url, headers=headers, timeout=30)
             
             # Check response
