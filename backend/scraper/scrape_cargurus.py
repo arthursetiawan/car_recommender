@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Random header function to mimic realistic user agent
 def get_random_headers():
     # Create a UserAgent object for random realistic user agents
     try:
