@@ -88,7 +88,7 @@ def scrape_cargurus(base_url, max_pages=5):
         logger.info(f"Scraping page {page}...")
         
         try:
-            # Get new headers for each request bro
+            # Get new headers for each request boskiski
             headers = get_random_headers()
             
             # Add a refer that looks like we're coming from previous pages
