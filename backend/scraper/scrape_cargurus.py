@@ -76,7 +76,7 @@ def scrape_cargurus(base_url, max_pages=5):
     time.sleep(human_like_delay())
     
     while page <= max_pages:
-        # Construct URL with page parameter
+        # Construct URL with page parameter man
         if page == 1:
             url = base_url
         else:
