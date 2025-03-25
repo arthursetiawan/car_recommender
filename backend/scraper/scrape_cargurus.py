@@ -44,6 +44,7 @@ def get_random_headers():
     }
     return headers
 
+# Human like delay!
 def human_like_delay():
     """Simulate more realistic human browsing behavior with variable delays"""
     # Base delay between 3-7 seconds
