@@ -1,60 +1,97 @@
 title,price,mileage,location
-2017 Nissan NV200 SV,"$15,995","123,488 mi.",ZAG Motors Lynnwood
-2003 Mazda Protege5 Hatchback 4D,"$4,950","81,524 mi.",Honest Car Sales
-2017 Nissan NV200 SV,"$14,995","131,168 mi.",ZAG Motors Everett
-2021 Chevrolet Traverse LT Cloth,"$25,991","50,239 mi.",Nissan of Everett
-2023 BMW M850 Gran Coupe xDrive,"$68,480","29,920 mi.",Elliott Bay Auto Brokers
-2004 Cadillac Escalade EXT Base,"$16,000","75,954 mi.",Sports Cars International
-2025 Hyundai SANTA CRUZ SEL Activity,"$34,196",N/A,Lee Johnson Hyundai of Everett
-2016 Mitsubishi i-MiEV ES,"$7,740","33,371 mi.",Pierre Chevrolet
 2025 Alfa Romeo Tonale Base,"$49,380",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2020 Porsche Cayenne E-Hybrid S,"$59,495","31,498 mi.",Landmark Motors
-2022 Aston Martin DBX Base,"$144,950","3,878 mi.",Park Place LTD
-2021 Aston Martin DBX Base,"$109,450","22,412 mi.",Park Place LTD
-2012 Cadillac CTS-V Base,"$54,950","80,573 mi.",Park Place LTD
-2021 Aston Martin DBX Base,"$109,950","20,827 mi.",Park Place LTD
-2007 Porsche Cayman,"$25,998","24,108 mi.",Jaguar Bellevue
-2016 Mercedes-Benz AMG S AMG S 63 4MATIC,"$49,950","68,363 mi.",Park Place LTD
-2023 Mercedes-Benz AMG GLB 35 Base,"$43,899","12,493 mi.",Energy Auto Sales Bellevue
-2014 Honda Accord Plug-In Hybrid Base,"$11,471","150,094 mi.",Kendall Ford of Marysville
-2024 Honda Civic Si Base,"$29,500","5,586 mi.",Honda of Marysville
-2007 Porsche Boxster S,"$22,744","57,968 mi.",Rairdon's Auto Outlet
-2010 Porsche Cayman Base,"$29,995","70,487 mi.",Seattle Finest Motors
-2012 INFINITI G37x Base,"$19,999","56,824 mi.",Seattle Finest Motors
-2021 Jeep Gladiator High Altitude 4X4,"$31,991","47,325 mi.",Nissan of Everett
-2011 Mitsubishi Lancer ES,"$7,777","81,006 mi.",Seattle Hyundai
-2021 Mercedes-Benz AMG GLA 35 4MATIC,"$34,991","21,200 mi.",Pierre Ford of Seattle
-2016 Volvo V60 T5 Drive-E Premier,"$11,991","100,546 mi.",Trucks Plus
+2025 Polestar 3,"$75,700",N/A,Polestar Bellevue
+2024 Polestar 3,"$85,700",N/A,Polestar Bellevue
+2024 Polestar 3,"$84,400",N/A,Polestar Bellevue
+2024 Polestar 3,"$91,700",N/A,Polestar Bellevue
 2025 Alfa Romeo Tonale Base,"$44,430",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2024 Alfa Romeo Tonale Veloce,"$44,640",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2024 Alfa Romeo Tonale Veloce,"$45,985",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2021 Maserati Levante S GranSport,"$46,000","15,308 mi.",Rairdon's Chrysler Dodge Jeep RAM of Kirkland
-2024 Hyundai TUCSON Plug-In Hybrid SEL,"$34,397",N/A,Hyundai of Kirkland
-2016 Porsche Cayman GT4,"$95,000","16,467 mi.",West State Motorsport
-2016 Porsche Cayman GTS,"$77,818","10,823 mi.",West State Motorsport
-2023 Aston Martin DBX 707,"$187,950","5,545 mi.",Park Place LTD
-2023 Aston Martin DBX 707,"$185,950","16,339 mi.",Park Place LTD
-2024 Ferrari Roma Base,"$264,900","1,336 mi.",Ferrari of Seattle
-2016 Land Rover LR4 Base,"$22,296","75,464 mi.",Land Rover Bellevue
-2014 Mercedes-Benz GLK-Class GLK 350,"$12,500","81,008 mi.",Legacy Auto Sales
-2012 Aston Martin Rapide Luxe,"$39,900","66,352 mi.",Auto Quest
-2004 Chevrolet Aveo 5 LS,"$6,777","112,187 mi.",Gilchrist Chevrolet of Port Orchard
-2020 Honda Pilot AWD EX-L,"$29,740","46,747 mi.",Toyota of Lake City
-2010 Honda Accord Crosstour EX-L,"$7,498","184,181 mi.",Platinum Autos
-2024 Hyundai TUCSON Plug-In Hybrid SEL,"$34,397",N/A,Hyundai of Kirkland
-2024 Alfa Romeo Tonale Ti,"$43,300",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2025 Alfa Romeo Tonale Base,"$46,630",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2025 Alfa Romeo Tonale Base,"$44,125",N/A,Rairdon's Alfa Romeo Maserati and Fiat of Kirkland
-2024 Audi Q5 e 55 S line Premium Plus,"$48,999","5,611 mi.",University Volkswagen Audi
-2024 Alfa Romeo Stelvio Quadrifoglio,"$97,320",N/A,Maserati Alfa Romeo of Seattle
+2024 Polestar 3,"$78,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$90,400",N/A,Polestar Bellevue
+2024 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2025 Mercedes-Benz AMG GLB 35 4MATIC,"$68,700",N/A,Mercedes-Benz of Bellevue
+2024 Ford Transit-350 Base,"$55,288",N/A,Kendall Ford of Marysville
+2025 Mercedes-Benz EQE 350 4MATIC,"$83,035",N/A,Mercedes-Benz of Lynnwood
+2025 Mercedes-Benz EQE 350 4MATIC,"$86,895",N/A,Mercedes-Benz of Lynnwood
+2025 Polestar 3,"$81,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$85,400",N/A,Polestar Bellevue
+2025 Polestar 3,"$81,500",N/A,Polestar Bellevue
 2025 Alfa Romeo Tonale EAWD,"$55,125",N/A,Alfa Romeo of Seattle
-2024 Alfa Romeo Tonale Veloce EAWD,"$51,373",N/A,Alfa Romeo of Seattle
-2018 Lexus LS 500h Base,"$47,329","37,182 mi.",BMW of Bellevue
-2021 Mercedes-Benz E-Class E 350 4MATIC Sedan,"$38,995","23,670 mi.",Landmark Motors
-2024 Audi Q5 e 55 S line quattro Premium,"$48,345","4,789 mi.",Land Rover Bellevue
-2019 Maserati GranTurismo MC,"$84,950","3,198 mi.",Park Place LTD
-2021 Porsche Cayenne E-Hybrid AWD,"$65,950","26,795 mi.",Park Place LTD
-2018 Maserati GranTurismo Sport,"$65,950","22,698 mi.",Park Place LTD
-2013 Subaru Impreza 2.0i Premium,"$10,499","94,534 mi.",Mountain Loop Motors
-2014 Mercedes-Benz GLK-Class GLK 350,"$12,500","81,008 mi.",Legacy Auto Sales
-2021 Mercedes-Benz AMG GLB 35 Base,"$34,999","45,528 mi.",Sound Ford
+2024 Alfa Romeo Stelvio Quadrifoglio,"$92,070",N/A,Maserati Alfa Romeo of Seattle
+2025 Polestar 3,"$82,200",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$81,900",N/A,Polestar Bellevue
+2024 Polestar 3,"$80,200",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$85,400",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2024 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2024 Ford Transit-350 Base,"$46,993",N/A,Kendall Ford of Marysville
+2025 Mercedes-Benz EQE 350 4MATIC,"$84,375",N/A,Mercedes-Benz of Lynnwood
+2024 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2024 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2025 Ford Transit-350 Base,"$69,850",N/A,AutoNation Ford Bellevue
+2024 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2024 Ford Transit-350 Base,"$58,357",N/A,Kendall Ford of Marysville
+2025 Mercedes-Benz CLE 450 4MATIC,"$72,595",N/A,Mercedes-Benz of Lynnwood
+2025 Polestar 3,"$75,500",N/A,Polestar Bellevue
+2026 BMW 840 i xDrive,"$99,454",N/A,BMW Seattle
+2024 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2024 Polestar 3,"$88,000",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,700",N/A,Polestar Bellevue
+2025 Mercedes-Benz GLE 450e 4MATIC,"$83,370",N/A,Mercedes-Benz of Bellevue
+2025 Polestar 3,"$86,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2025 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,900",N/A,Polestar Bellevue
+2025 Hyundai SANTA CRUZ Limited,"$41,314",N/A,Lee Johnson Hyundai of Everett
+2025 Mercedes-Benz AMG GLB 35 4MATIC,"$67,950",N/A,Mercedes-Benz of Bellevue
+2024 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2025 Polestar 3,"$92,000",N/A,Polestar Bellevue
+2025 Polestar 3,"$82,200",N/A,Polestar Bellevue
+2025 Polestar 3,"$85,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$86,900",N/A,Polestar Bellevue
+2025 Polestar 3,"$85,600",N/A,Polestar Bellevue
+2025 Mercedes-Benz AMG GLE 63 S 4MATIC+,"$134,845",N/A,Mercedes-Benz of Bellevue
+2025 Polestar 3,"$87,000",N/A,Polestar Bellevue
+2025 Toyota Land Cruiser 1958,"$57,936",N/A,Marysville Toyota
+2024 Ford Transit-350 Base,"$63,744",N/A,Kendall Ford of Marysville
+2025 Polestar 3,"$87,000",N/A,Polestar Bellevue
+2025 Polestar 3,"$81,400",N/A,Polestar Bellevue
+2025 Mercedes-Benz AMG GT 55 C,"$160,405",N/A,Mercedes-Benz of Bellevue
+2024 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2025 Polestar 3,"$80,600",N/A,Polestar Bellevue
+2025 Polestar 3,"$85,600",N/A,Polestar Bellevue
+2024 Polestar 3,"$86,200",N/A,Polestar Bellevue
+2024 Ford Transit-350 Base,"$56,712",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$58,789",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$55,190",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$52,085",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$54,964",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$58,982",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$58,357",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$55,565",N/A,Pierre Ford Lincoln of Lynnwood
+2025 Lexus RX 350h F SPORT Design,Not Priced,N/A,Lexus of Seattle
+2024 Ford Transit-350 Base,"$53,499",N/A,Pierre Ford Lincoln of Lynnwood
+2025 Lexus LS 500 Base,Not Priced,N/A,Lexus of Seattle
+2025 Polestar 3,"$81,900",N/A,Polestar Bellevue
+2025 Mercedes-Benz GLE 450e 4MATIC,"$78,045",N/A,Mercedes-Benz of Bellevue
+2025 Polestar 3,"$91,700",N/A,Polestar Bellevue
+2024 Ford Transit-350 Base,"$58,357",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$47,761",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$58,286",N/A,Kendall Ford of Marysville
+2025 Ford Transit-350 Base,"$58,905",N/A,Kendall Ford of Marysville
+2024 Ford Transit-350 Base,"$55,288",N/A,Kendall Ford of Marysville
+2025 Hyundai ELANTRA N Base,"$36,781",N/A,Seattle Hyundai
+2024 Ford Transit-350 Base,"$52,640",N/A,Pierre Ford of Seattle
+2024 Polestar 3,"$85,700",N/A,Polestar Bellevue
+2025 Polestar 3,"$67,500",N/A,Polestar Bellevue
+2025 Ford Transit-350 Base,"$53,335",N/A,Kendall Ford of Marysville
+2025 Ford Transit-350 Base,"$61,355",N/A,Sound Ford

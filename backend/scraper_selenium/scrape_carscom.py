@@ -7,7 +7,7 @@ import time
 import pandas as pd
 
 #MAX PAGES SET TO 5
-def scrape_cars_com(base_url, max_pages=5):
+def scrape_cars_com(base_url, max_pages=10):
     options = Options()
     options.add_argument("--headless")  # Run in headless mode
     options.add_argument("--disable-gpu")
@@ -29,7 +29,7 @@ def scrape_cars_com(base_url, max_pages=5):
             try:
                 title = listing.find_element(By.CSS_SELECTOR, "h2.title").text.strip()
                 price = listing.find_element(By.CSS_SELECTOR, "span.primary-price").text.strip()
-                mileage = listing.find_element(By.CSS_SELECTOR, "div.mileage").text.strip() if listing.find_elements(By.CSS_SELECTOR, "div.mileage") else "N/A"
+                mileage = listing.find_element(By.CSS_SELECTOR, "div. mileage").text.strip() if listing.find_elements(By.CSS_SELECTOR, "div.mileage") else "N/A"
                 location = listing.find_element(By.CSS_SELECTOR, "div.dealer-name").text.strip() if listing.find_elements(By.CSS_SELECTOR, "div.dealer-name") else "N/A"
                 
                 car = {
@@ -47,7 +47,7 @@ def scrape_cars_com(base_url, max_pages=5):
 
 if __name__ == "__main__":
     url = "https://www.cars.com/shopping/results/"
-    cars_data = scrape_cars_com(url, max_pages=3)
+    cars_data = scrape_cars_com(url, max_pages=10)
     
     if cars_data:
         df = pd.DataFrame(cars_data)
