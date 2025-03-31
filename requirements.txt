@@ -1,0 +1,8 @@
+fastapi
+sqlalchemy
+requests
+bs4
+pandas
+fake-useragent
+selenium
+webdriver_manager
