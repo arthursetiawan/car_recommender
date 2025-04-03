@@ -1,0 +1,35 @@
+name: Daily Car Scraper
+
+on:
+  schedule:
+    - cron: '0 19 * * 1-5'  # Runs daily at 12 PM UTC (adjust for your timezone)
+  workflow_dispatch: # Allows manual runs
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run web scraper
+        run: python scraper.py
+
+      - name: Commit and Push CSV Results
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add data/cars_com_data.csv
+          git commit -m "Update scraped data [$(date)]" || echo "No changes to commit"
+          git push
