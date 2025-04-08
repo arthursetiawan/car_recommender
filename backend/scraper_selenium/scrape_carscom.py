@@ -50,6 +50,9 @@ def scrape_cars_com(base_url, max_pages=1):
                 car = {}
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+                # Stock Type
+                car["stock_type"] = listing.find_element(By.CSS_SELECTOR, "div.vehicle-details p.stock-type").text.strip()
+
                 # Title
                 title = listing.find_element(By.CSS_SELECTOR, "h2.title").text.strip()
                 parsed_title = parse_title(title)
