@@ -25,11 +25,3 @@ jobs:
 
       - name: Run web scraper
         run: python run_scraper.py
-
-      - name: Commit and Push CSV Results
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add data/cars_com_data.csv
-          git commit -m "Update scraped data [$(date)]" || echo "No changes to commit"
-          git push
