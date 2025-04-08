@@ -26,7 +26,7 @@ def parse_title(title):
     return {"year": "Unknown", "model": title, "trim": "Unknown"}
 
 # Scrape Cars.com listings (max 10 pages)
-def scrape_cars_com(base_url, max_pages=100):
+def scrape_cars_com(base_url, max_pages=1):
     options = Options()
     options.add_argument("--headless")  # Run in headless mode
     options.add_argument("--disable-gpu")
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     csv_file = "../../data/cars_com_data.csv"
     
     # Scrape data
-    cars_data = scrape_cars_com(url, max_pages=100)
+    cars_data = scrape_cars_com(url, max_pages=1)
     
     if cars_data:
         df = pd.DataFrame(cars_data)
