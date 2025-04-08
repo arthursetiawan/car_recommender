@@ -6,3 +6,6 @@ pandas
 fake-useragent
 selenium
 webdriver_manager
+psycopg2-binary
+supabase
+python-dotenv
