@@ -2,6 +2,7 @@ import logging
 import re
 import time
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -51,7 +52,10 @@ def scrape_cars_com(base_url, max_pages=1):
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
                 # Stock Type
-                car["stock_type"] = listing.find_element(By.CSS_SELECTOR, "div.vehicle-details p.stock-type").text.strip()
+                try:
+                    car["stock_type"] = listing.find_element(By.CSS_SELECTOR, "div.vehicle-details p.stock-type").text.strip()
+                except:
+                    car["stock_type"] = "N/A"
 
                 # Title
                 title = listing.find_element(By.CSS_SELECTOR, "h2.title").text.strip()
@@ -62,7 +66,10 @@ def scrape_cars_com(base_url, max_pages=1):
                 car["trim"] = parsed_title["trim"]
 
                 # Price
-                car["price"] = listing.find_element(By.CSS_SELECTOR, "span.primary-price").text.strip()
+                try:
+                    car["price"] = listing.find_element(By.CSS_SELECTOR, "span.primary-price").text.strip()
+                except:
+                    car["price"] = np.nan
 
                 # Mileage
                 try:
