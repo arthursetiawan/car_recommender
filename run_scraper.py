@@ -11,7 +11,7 @@ logger = logging.getLogger()
 
 if __name__ == "__main__":
     logger.info('Scraping cars.com')
-    cars_data = scrape_cars_com("https://www.cars.com/shopping/results/", max_pages=10)
+    cars_data = scrape_cars_com("https://www.cars.com/shopping/results/", max_pages=100)
     
     if cars_data:
         df = pd.DataFrame(cars_data)
