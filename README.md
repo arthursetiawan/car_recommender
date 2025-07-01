@@ -3,6 +3,8 @@
 ## Idea
 The Car Recommendation Algorithm is designed to help individuals who are unsure about what car to purchase, whether new or used. The goal is to provide a recommendation system that suggests cars based on user preferences such as budget, car type, fuel efficiency, safety ratings, and more. The algorithm takes user input and returns a tailored list of cars, making the car-buying process more accessible and informed.
 
+Being able to recommend transparent pricing 
+
 ## Niche Ideas
 - Manufacturer specific (Honda, Toyota, Porsche, BMW, American)
 - Focus on specific deals (good discounts based on algorithm from cargurus) - I like good deals
