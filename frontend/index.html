@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DriveQuest — Car Advisor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="app">
+      <header class="brand-bar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <h1>DriveQuest</h1>
+        </div>
+        <p class="tagline">Chat your way to a smarter car pick — value, budget, reliability.</p>
+        <div class="meta-row">
+          <span id="mode-badge" class="badge">booting…</span>
+          <button type="button" id="reset-btn" class="ghost-btn">Restart quest</button>
+        </div>
+      </header>
+
+      <main class="board">
+        <section class="panel chat-panel" aria-label="Conversation">
+          <div id="messages" class="messages" role="log" aria-live="polite"></div>
+          <div id="choices" class="choices" aria-label="Quest choices"></div>
+          <form id="chat-form" class="composer">
+            <label class="sr-only" for="chat-input">Message</label>
+            <input
+              id="chat-input"
+              type="text"
+              autocomplete="off"
+              placeholder="Say a budget, body type, or ask for the best pick…"
+            />
+            <button type="submit" class="primary-btn">Send</button>
+          </form>
+        </section>
+
+        <section class="panel radar-panel" aria-label="Hexagonal comparison">
+          <div class="panel-head">
+            <h2>Hex matchup</h2>
+            <p id="radar-sub">Contenders appear as you narrow the field.</p>
+          </div>
+          <div class="radar-wrap">
+            <canvas id="hex-radar" width="420" height="420" aria-label="Radar chart"></canvas>
+          </div>
+          <ul id="legend" class="legend"></ul>
+          <div id="best-card" class="best-card hidden"></div>
+        </section>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
