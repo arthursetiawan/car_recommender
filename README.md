@@ -39,9 +39,18 @@ uvicorn backend.app:app --reload --port 8000
 | `POST` | `/api/session` | Start a quest session |
 | `POST` | `/api/chat` | `{ "message", "session_id?" }` |
 | `POST` | `/api/choice` | `{ "session_id?", "stage", "value" }` chip pick |
-| `GET`  | `/api/catalog` | Scored catalog |
+| `GET`  | `/api/catalog` | Scored catalog (with images + powertrain fields) |
+| `GET`  | `/api/ev-tradeoffs` | EV vs gas tradeoff knowledge |
+| `GET`  | `/api/roi/defaults` | Default ROI assumptions + sample pairs |
+| `POST` | `/api/roi` | Break-even calculator (car ids or custom prices) |
 | `GET`  | `/recommendations/?budget=` | Legacy filter (DB or catalog fallback) |
 | `GET`  | `/health` | Liveness |
+
+### Try the ROI calculator
+
+1. Open the app and scroll to **EV vs gas ROI**.
+2. Pick a pair (e.g. Model 3 vs Camry), set miles/year and incentive, click **Calculate break-even**.
+3. Or chat: `EV vs gas ROI for Model 3 vs Camry at 12000 miles/year` / click **Ask EV vs gas**.
 
 ## Project layout
 

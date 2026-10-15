@@ -98,15 +98,24 @@ def score_practicality(car: dict[str, Any]) -> float:
     return _clamp(base + body_bonus - mileage_penalty)
 
 
-def score_car(car: dict[str, Any], budget: float | None = None) -> dict[str, float]:
-    return {
-        "value": round(score_value(car), 2),
-        "budget_fit": round(score_budget_fit(car, budget), 2),
-        "reliability": round(score_reliability(car), 2),
-        "efficiency": round(score_efficiency(car), 2),
-        "safety": round(score_safety(car), 2),
-        "practicality": round(score_practicality(car), 2),
+def score_car(
+    car: dict[str, Any],
+    budget: float | None = None,
+    prefs: dict[str, Any] | None = None,
+) -> dict[str, float]:
+    from ev_tradeoffs import enrich_powertrain_fields, powertrain_score_adjustments
+
+    car = enrich_powertrain_fields(car)
+    base = {
+        "value": score_value(car),
+        "budget_fit": score_budget_fit(car, budget),
+        "reliability": score_reliability(car),
+        "efficiency": score_efficiency(car),
+        "safety": score_safety(car),
+        "practicality": score_practicality(car),
     }
+    adj = powertrain_score_adjustments(car, prefs)
+    return {axis: round(_clamp(base[axis] + adj.get(axis, 0.0)), 2) for axis in HEX_AXES}
 
 
 def overall_score(metrics: dict[str, float], weights: dict[str, float] | None = None) -> float:
@@ -115,8 +124,16 @@ def overall_score(metrics: dict[str, float], weights: dict[str, float] | None = 
     return round(sum(metrics[a] * weights.get(a, 1.0) for a in HEX_AXES) / total_w, 2)
 
 
-def enrich_car(car: dict[str, Any], budget: float | None = None, weights: dict[str, float] | None = None) -> dict[str, Any]:
-    metrics = score_car(car, budget)
+def enrich_car(
+    car: dict[str, Any],
+    budget: float | None = None,
+    weights: dict[str, float] | None = None,
+    prefs: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    from ev_tradeoffs import enrich_powertrain_fields
+
+    car = enrich_powertrain_fields(car)
+    metrics = score_car(car, budget, prefs)
     return {
         **car,
         "metrics": metrics,
@@ -135,6 +152,8 @@ class PreferenceState:
     condition: str | None = None  # new | used | either
     fuel_types: list[str] = field(default_factory=list)
     priority: str | None = None  # reliability | value | efficiency | practicality | safety
+    prefer_ev: bool | None = None  # True EV lean, False gas lean, None undecided
+    miles_per_year: int | None = None
     min_year: int | None = None
     max_mileage: int | None = None
     eliminated_ids: list[str] = field(default_factory=list)
@@ -153,6 +172,11 @@ class PreferenceState:
         }.get(self.priority or "")
         if boost:
             w[boost] = 2.0
+        if self.prefer_ev is True:
+            w["efficiency"] = max(w["efficiency"], 1.5)
+            w["value"] = max(w["value"], 1.25)
+        elif self.prefer_ev is False:
+            w["practicality"] = max(w["practicality"], 1.5)
         return w
 
     def to_dict(self) -> dict[str, Any]:
@@ -162,6 +186,8 @@ class PreferenceState:
             "condition": self.condition,
             "fuel_types": self.fuel_types,
             "priority": self.priority,
+            "prefer_ev": self.prefer_ev,
+            "miles_per_year": self.miles_per_year,
             "min_year": self.min_year,
             "max_mileage": self.max_mileage,
             "eliminated_ids": self.eliminated_ids,
@@ -179,6 +205,8 @@ class PreferenceState:
             condition=data.get("condition"),
             fuel_types=list(data.get("fuel_types") or []),
             priority=data.get("priority"),
+            prefer_ev=data.get("prefer_ev"),
+            miles_per_year=data.get("miles_per_year"),
             min_year=data.get("min_year"),
             max_mileage=data.get("max_mileage"),
             eliminated_ids=list(data.get("eliminated_ids") or []),
@@ -272,7 +300,8 @@ def rank_cars(
 ) -> list[dict[str, Any]]:
     filtered = filter_catalog(cars, prefs)
     weights = prefs.weights()
-    enriched = [enrich_car(c, prefs.budget, weights) for c in filtered]
+    pref_dict = prefs.to_dict()
+    enriched = [enrich_car(c, prefs.budget, weights, pref_dict) for c in filtered]
     if prefs.shortlist_ids:
         shortlisted = [c for c in enriched if c["id"] in prefs.shortlist_ids]
         if shortlisted:

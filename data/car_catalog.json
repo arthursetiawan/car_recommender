@@ -14,7 +14,8 @@
     "market_value": 25000,
     "seats": 5,
     "fuel_type": "hybrid",
-    "summary": "Reliable midsize sedan with strong resale and hybrid efficiency."
+    "summary": "Reliable midsize sedan with strong resale and hybrid efficiency.",
+    "image": "/static/cars/toyota-camry-2022.jpg"
   },
   {
     "id": "honda-civic-2023",
@@ -31,7 +32,8 @@
     "market_value": 23500,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Efficient compact with sharp handling and low ownership costs."
+    "summary": "Efficient compact with sharp handling and low ownership costs.",
+    "image": "/static/cars/honda-civic-2023.jpg"
   },
   {
     "id": "toyota-rav4-2021",
@@ -48,7 +50,8 @@
     "market_value": 27500,
     "seats": 5,
     "fuel_type": "hybrid",
-    "summary": "Compact SUV staple—practical, reliable, holds value well."
+    "summary": "Compact SUV staple\u2014practical, reliable, holds value well.",
+    "image": "/static/cars/toyota-rav4-2021.jpg"
   },
   {
     "id": "mazda-cx5-2022",
@@ -65,7 +68,8 @@
     "market_value": 26000,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Upscale small SUV feel without luxury pricing."
+    "summary": "Upscale small SUV feel without luxury pricing.",
+    "image": "/static/cars/mazda-cx5-2022.jpg"
   },
   {
     "id": "honda-crv-2020",
@@ -82,7 +86,8 @@
     "market_value": 24500,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Roomy, proven compact crossover for daily errands and trips."
+    "summary": "Roomy, proven compact crossover for daily errands and trips.",
+    "image": "/static/cars/honda-crv-2020.jpg"
   },
   {
     "id": "subaru-outback-2021",
@@ -99,7 +104,8 @@
     "market_value": 27800,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "AWD adventure wagon with strong safety and cargo space."
+    "summary": "AWD adventure wagon with strong safety and cargo space.",
+    "image": "/static/cars/subaru-outback-2021.jpg"
   },
   {
     "id": "hyundai-elantra-2024",
@@ -116,7 +122,8 @@
     "market_value": 23500,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Feature-rich new compact with long warranty coverage."
+    "summary": "Feature-rich new compact with long warranty coverage.",
+    "image": "/static/cars/hyundai-elantra-2024.jpg"
   },
   {
     "id": "toyota-corolla-2023",
@@ -133,7 +140,8 @@
     "market_value": 20500,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Budget-friendly reliability king for commuting."
+    "summary": "Budget-friendly reliability king for commuting.",
+    "image": "/static/cars/toyota-corolla-2023.jpg"
   },
   {
     "id": "ford-maverick-2023",
@@ -150,7 +158,8 @@
     "market_value": 29500,
     "seats": 5,
     "fuel_type": "hybrid",
-    "summary": "Compact hybrid truck—efficient workhorse for light duty."
+    "summary": "Compact hybrid truck\u2014efficient workhorse for light duty.",
+    "image": "/static/cars/ford-maverick-2023.jpg"
   },
   {
     "id": "kia-telluride-2022",
@@ -167,7 +176,8 @@
     "market_value": 36500,
     "seats": 7,
     "fuel_type": "gas",
-    "summary": "Three-row family SUV with strong value and features."
+    "summary": "Three-row family SUV with strong value and features.",
+    "image": "/static/cars/kia-telluride-2022.jpg"
   },
   {
     "id": "tesla-model3-2021",
@@ -184,7 +194,8 @@
     "market_value": 25500,
     "seats": 5,
     "fuel_type": "electric",
-    "summary": "Efficient EV sedan; low fuel cost, mixed repair network."
+    "summary": "Efficient EV sedan; low fuel cost, mixed repair network.",
+    "image": "/static/cars/tesla-model3-2021.jpg"
   },
   {
     "id": "mazda-cx50-2025",
@@ -201,7 +212,8 @@
     "market_value": 42385,
     "seats": 5,
     "fuel_type": "hybrid",
-    "summary": "New hybrid crossover—efficient and nicely appointed."
+    "summary": "New hybrid crossover\u2014efficient and nicely appointed.",
+    "image": "/static/cars/mazda-cx50-2025.jpg"
   },
   {
     "id": "vw-jetta-2014",
@@ -218,7 +230,8 @@
     "market_value": 11000,
     "seats": 5,
     "fuel_type": "hybrid",
-    "summary": "Cheap hybrid entry; strong efficiency, weaker long-term reliability."
+    "summary": "Cheap hybrid entry; strong efficiency, weaker long-term reliability.",
+    "image": "/static/cars/vw-jetta-2014.jpg"
   },
   {
     "id": "mini-cooper-2011",
@@ -235,7 +248,8 @@
     "market_value": 9000,
     "seats": 4,
     "fuel_type": "gas",
-    "summary": "Fun hatch on a budget—expect higher maintenance risk."
+    "summary": "Fun hatch on a budget\u2014expect higher maintenance risk.",
+    "image": "/static/cars/mini-cooper-2011.jpg"
   },
   {
     "id": "nissan-pathfinder-2014",
@@ -252,7 +266,8 @@
     "market_value": 10000,
     "seats": 7,
     "fuel_type": "hybrid",
-    "summary": "Inexpensive three-row; higher miles and mixed reliability."
+    "summary": "Inexpensive three-row; higher miles and mixed reliability.",
+    "image": "/static/cars/nissan-pathfinder-2014.jpg"
   },
   {
     "id": "honda-accord-2019",
@@ -269,7 +284,8 @@
     "market_value": 22000,
     "seats": 5,
     "fuel_type": "gas",
-    "summary": "Spacious midsize sedan with a reputation for lasting."
+    "summary": "Spacious midsize sedan with a reputation for lasting.",
+    "image": "/static/cars/honda-accord-2019.jpg"
   },
   {
     "id": "toyota-highlander-2020",
@@ -286,7 +302,8 @@
     "market_value": 33500,
     "seats": 7,
     "fuel_type": "hybrid",
-    "summary": "Family three-row hybrid with Toyota reliability."
+    "summary": "Family three-row hybrid with Toyota reliability.",
+    "image": "/static/cars/toyota-highlander-2020.jpg"
   },
   {
     "id": "chevrolet-bolt-2022",
@@ -303,6 +320,7 @@
     "market_value": 19500,
     "seats": 5,
     "fuel_type": "electric",
-    "summary": "Affordable EV hatch for city driving and short trips."
+    "summary": "Affordable EV hatch for city driving and short trips.",
+    "image": "/static/cars/chevrolet-bolt-2022.jpg"
   }
 ]

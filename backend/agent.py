@@ -12,7 +12,8 @@ import re
 import uuid
 from typing import Any
 
-from catalog import list_cars
+from catalog import get_car, list_cars
+from ev_tradeoffs import DEFAULT_ASSUMPTIONS, advise_ev_vs_gas, summarize_tradeoffs
 from recommendation_engine import (
     PreferenceState,
     STAGE_PROMPTS,
@@ -20,6 +21,7 @@ from recommendation_engine import (
     next_stage_payload,
     rank_cars,
 )
+from roi_calculator import calculate_ev_roi, roi_from_cars
 
 # Optional LangChain imports — kept soft so the app boots without the package
 # during partial installs; requirements.txt pins the real deps.
@@ -41,11 +43,15 @@ SYSTEM_PROMPT = """You are DriveQuest, a conversational car-buying advisor.
 Your job: help users pick a car through a playful, progressive set of decisions.
 Focus on value, budget fit, reliability, efficiency, safety, and practicality.
 
+You are trained on EV vs gas tradeoffs: charging access, fuel/energy cost, maintenance,
+incentives/tax credits, range & cold weather, and resale/depreciation. When users ask
+about EV vs gas value, call explain_ev_tradeoffs and/or calculate_ev_roi.
+
 Rules:
 - Keep replies concise (2–4 sentences) and encouraging, game-like (levels, contenders, tradeoffs).
 - Prefer asking one decision at a time when preferences are incomplete.
 - When recommending, cite the hexagonal metrics (value, budget fit, reliability, efficiency, safety, practicality).
-- Use tools to update preferences, rank cars, and fetch comparisons — do not invent inventory.
+- Use tools to update preferences, rank cars, explain EV tradeoffs, and run the ROI calculator — do not invent inventory or break-even numbers.
 - Never invent prices or reliability scores; trust tool output.
 """
 
@@ -57,6 +63,7 @@ def _session(session_id: str | None) -> tuple[str, dict[str, Any]]:
             "prefs": PreferenceState().to_dict(),
             "messages": [],
             "last_contenders": [],
+            "last_roi": None,
         }
     return sid, SESSIONS[sid]
 
@@ -79,6 +86,8 @@ def build_tools(state: dict[str, Any]):
         condition: str | None = None,
         priority: str | None = None,
         fuel_type: str | None = None,
+        prefer_ev: bool | None = None,
+        miles_per_year: int | None = None,
         eliminate_id: str | None = None,
         shortlist_id: str | None = None,
         stage: str | None = None,
@@ -103,6 +112,10 @@ def build_tools(state: dict[str, Any]):
                 prefs.stage = "condition"
         if fuel_type:
             prefs.fuel_types = [fuel_type.lower()]
+        if prefer_ev is not None:
+            prefs.prefer_ev = prefer_ev
+        if miles_per_year is not None:
+            prefs.miles_per_year = int(miles_per_year)
         if eliminate_id and eliminate_id not in prefs.eliminated_ids:
             prefs.eliminated_ids.append(eliminate_id)
         if shortlist_id and shortlist_id not in prefs.shortlist_ids:
@@ -164,7 +177,95 @@ def build_tools(state: dict[str, Any]):
         state["last_contenders"] = []
         return json.dumps({"ok": True, "prefs": state["prefs"]})
 
-    return [update_preferences, rank_contenders, get_best_pick, reset_quest]
+    @tool
+    def explain_ev_tradeoffs(topics: str | None = None, context: str | None = None) -> str:
+        """Explain EV vs gas tradeoffs. topics is a comma list of:
+        charging, fuel_cost, maintenance, incentives, range_cold, resale.
+        Omit topics for all. Optional context is free text about the user's situation."""
+        topic_list = None
+        if topics:
+            topic_list = [t.strip() for t in topics.split(",") if t.strip()]
+        payload = summarize_tradeoffs(topic_list)
+        prefs = _prefs(state)
+        advice = advise_ev_vs_gas(prefs.to_dict(), context)
+        state["last_roi"] = None
+        return json.dumps({"advice": advice, **payload})
+
+    @tool
+    def calculate_ev_roi(
+        ev_price: float | None = None,
+        gas_price: float | None = None,
+        incentive: float | None = None,
+        miles_per_year: float | None = None,
+        gas_mpg: float | None = None,
+        gas_price_per_gallon: float | None = None,
+        ev_kwh_per_100mi: float | None = None,
+        electricity_rate_per_kwh: float | None = None,
+        annual_maintenance_delta: float | None = None,
+        home_charger_cost: float | None = None,
+        ev_car_id: str | None = None,
+        gas_car_id: str | None = None,
+    ) -> str:
+        """Estimate years/months to break even buying an EV vs a comparable gas car.
+        Pass either explicit prices or catalog car ids (ev_car_id / gas_car_id)."""
+        prefs = _prefs(state)
+        miles = miles_per_year or prefs.miles_per_year or DEFAULT_ASSUMPTIONS["miles_per_year"]
+        if prefs.miles_per_year is None and miles_per_year:
+            prefs.miles_per_year = int(miles_per_year)
+            _save_prefs(state, prefs)
+
+        if ev_car_id and gas_car_id:
+            ev_car = get_car(ev_car_id)
+            gas_car = get_car(gas_car_id)
+            if not ev_car or not gas_car:
+                return json.dumps({"error": "Unknown car id for EV or gas comparison."})
+            result = roi_from_cars(
+                ev_car,
+                gas_car,
+                incentive=incentive,
+                miles_per_year=miles,
+                gas_price_per_gallon=gas_price_per_gallon,
+                electricity_rate_per_kwh=electricity_rate_per_kwh,
+                home_charger_cost=home_charger_cost,
+            )
+        else:
+            if ev_price is None or gas_price is None:
+                # Sensible catalog defaults: Model 3 vs Camry
+                ev_car = get_car("tesla-model3-2021")
+                gas_car = get_car("toyota-camry-2022")
+                result = roi_from_cars(
+                    ev_car,
+                    gas_car,
+                    incentive=incentive if incentive is not None else 0.0,
+                    miles_per_year=miles,
+                    gas_price_per_gallon=gas_price_per_gallon,
+                    electricity_rate_per_kwh=electricity_rate_per_kwh,
+                    home_charger_cost=home_charger_cost,
+                )
+            else:
+                result = calculate_ev_roi(
+                    float(ev_price),
+                    float(gas_price),
+                    incentive=float(incentive or 0),
+                    home_charger_cost=home_charger_cost,
+                    miles_per_year=miles,
+                    gas_mpg=gas_mpg,
+                    gas_price_per_gallon=gas_price_per_gallon,
+                    ev_kwh_per_100mi=ev_kwh_per_100mi,
+                    electricity_rate_per_kwh=electricity_rate_per_kwh,
+                    annual_maintenance_delta=annual_maintenance_delta,
+                )
+        state["last_roi"] = result
+        return json.dumps(result)
+
+    return [
+        update_preferences,
+        rank_contenders,
+        get_best_pick,
+        reset_quest,
+        explain_ev_tradeoffs,
+        calculate_ev_roi,
+    ]
 
 
 def _openai_ready() -> bool:
@@ -282,10 +383,97 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
     if any(w in text for w in ("reset", "start over", "restart")):
         state["prefs"] = PreferenceState().to_dict()
         state["last_contenders"] = []
+        state["last_roi"] = None
         return (
             "Quest reset! Level 1 — Budget. What's the most you want to spend? "
             "Tap a chip or tell me a number."
         )
+
+    # EV vs gas advice + ROI (can interrupt the quest flow)
+    miles_match = re.search(r"(\d[\d,]*)\s*(?:miles|/yr|per year|a year)", text)
+    if miles_match:
+        prefs.miles_per_year = int(miles_match.group(1).replace(",", ""))
+
+    if any(w in text for w in ("electric", " ev", "ev ", "ev?", "tesla", "plug-in", "charging")):
+        prefs.prefer_ev = True
+    if any(w in text for w in ("gas car", "gasoline", "petrol", "prefer gas", "stick with gas")):
+        prefs.prefer_ev = False
+
+    wants_roi = any(
+        w in text
+        for w in (
+            "roi",
+            "break even",
+            "breakeven",
+            "break-even",
+            "payback",
+            "worth it",
+            "savings",
+            "calculator",
+        )
+    )
+    wants_tradeoffs = any(
+        w in text
+        for w in (
+            "ev vs",
+            "electric vs",
+            "vs gas",
+            "versus gas",
+            "tradeoff",
+            "trade-off",
+            "charging",
+            "incentive",
+            "tax credit",
+            "cold weather",
+            "range anxiety",
+        )
+    )
+
+    if wants_roi or (wants_tradeoffs and "roi" in text):
+        incentive = DEFAULT_ASSUMPTIONS["federal_ev_credit"] if "credit" in text or "incentive" in text else 0.0
+        # Prefer catalog pair when available
+        ev_car = get_car("tesla-model3-2021")
+        gas_car = get_car("toyota-camry-2022")
+        # Allow user to hint bolt
+        if "bolt" in text:
+            ev_car = get_car("chevrolet-bolt-2022")
+        if "civic" in text:
+            gas_car = get_car("honda-civic-2023")
+        if "corolla" in text:
+            gas_car = get_car("toyota-corolla-2023")
+        result = roi_from_cars(
+            ev_car,
+            gas_car,
+            incentive=incentive,
+            miles_per_year=prefs.miles_per_year or DEFAULT_ASSUMPTIONS["miles_per_year"],
+        )
+        state["last_roi"] = result
+        _save_prefs(state, prefs)
+        yrs = result["years_to_roi"]
+        payback = f"{yrs:.1f} years" if yrs is not None else "never (at these inputs)"
+        return (
+            f"EV ROI check — **{result['ev_car']['label']}** vs **{result['gas_car']['label']}**.\n"
+            f"Upfront EV premium (after incentives/charger): ${result['upfront_premium']:,.0f}.\n"
+            f"Annual savings (energy + maintenance): ${result['annual_total_savings']:,.0f}.\n"
+            f"Time to break even: **{payback}**.\n"
+            f"{result['verdict']}\n"
+            "Tweak the ROI calculator panel on the right, or ask about charging / cold weather / incentives."
+        )
+
+    if wants_tradeoffs or (
+        prefs.prefer_ev is True
+        and any(w in text for w in ("why", "should i", "explain", "tell me", "pros", "cons"))
+    ):
+        advice = advise_ev_vs_gas(prefs.to_dict(), text)
+        topics = summarize_tradeoffs(
+            ["charging", "fuel_cost", "maintenance", "incentives", "range_cold", "resale"]
+        )
+        _save_prefs(state, prefs)
+        lines = [advice, "", "Key tradeoffs:"]
+        for t in topics["topics"][:4]:
+            lines.append(f"- **{t['title']}**: {t['tip']}")
+        lines.append("Ask for an ROI / break-even estimate anytime — or use the calculator panel.")
+        return "\n".join(lines)
 
     # Free-text preference sniffing
     budget = _parse_budget(text)
@@ -433,6 +621,8 @@ def chat(message: str, session_id: str | None = None) -> dict[str, Any]:
         "stage": stage_payload,
         "contenders": contenders,
         "hex_axes": list(contenders[0]["hex_labels"]) if contenders else list(STAGE_PROMPTS),
+        "roi": state.get("last_roi"),
+        "ev_assumptions": DEFAULT_ASSUMPTIONS,
     }
 
 
@@ -459,7 +649,8 @@ def new_session() -> dict[str, Any]:
         "session_id": sid,
         "reply": (
             "Welcome to DriveQuest — a car-buying quest focused on value, budget, "
-            "and reliability. Level 1: set your budget to begin."
+            "reliability, and EV vs gas tradeoffs. Level 1: set your budget to begin. "
+            "You can also ask about EV break-even anytime or use the ROI calculator."
         ),
         "mode": "langchain" if _openai_ready() else "demo",
         "langchain_available": LANGCHAIN_AVAILABLE,
@@ -467,4 +658,6 @@ def new_session() -> dict[str, Any]:
         "prefs": prefs.to_dict(),
         "stage": stage,
         "contenders": [],
+        "roi": None,
+        "ev_assumptions": DEFAULT_ASSUMPTIONS,
     }
