@@ -1,4 +1,5 @@
 fastapi
+uvicorn[standard]
 sqlalchemy
 requests
 bs4
@@ -9,3 +10,8 @@ webdriver_manager
 psycopg2-binary
 supabase
 python-dotenv
+langchain
+langchain-core
+langchain-openai
+openai
+pydantic

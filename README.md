@@ -1,83 +1,78 @@
-# Car Recommendation Algorithm
+# DriveQuest — Conversational Car Recommender
 
-## Idea
-The Car Recommendation Algorithm is designed to help individuals who are unsure about what car to purchase, whether new or used. The goal is to provide a recommendation system that suggests cars based on user preferences such as budget, car type, fuel efficiency, safety ratings, and more. The algorithm takes user input and returns a tailored list of cars, making the car-buying process more accessible and informed.
+LangChain-powered car advisor that turns shopping into a progressive quest. You chat (or tap choice chips) to narrow budget, body type, priorities, and new/used — then compare contenders on a **hexagonal radar** across six axes:
 
-Being able to recommend transparent pricing 
+1. **Value** — deal quality vs market
+2. **Budget fit** — how well price sits under your max
+3. **Reliability**
+4. **Efficiency** — fuel / energy
+5. **Safety**
+6. **Practicality** — space, body style, wear
 
-## Niche Ideas
-- Manufacturer specific (Honda, Toyota, Porsche, BMW, American)
-- Focus on specific deals (good discounts based on algorithm from cargurus) - I like good deals
-- Auction Sites: pcarmarket, carsandbids, etc, craigslist, offerup
+Built on the existing FastAPI + SQLAlchemy + scraper codebase; the scrapers and legacy `/recommendations/` endpoint remain.
 
-## Features
-- Car Type Selection: Choose from different car types like sedan, SUV, hatchback, etc.
-- Budget Constraints: Filter recommendations based on the user's price range.
-- Fuel Efficiency: Prioritize cars with the best miles per gallon (MPG).
-- Safety Rating: Provide recommendations based on safety test scores.
-- New vs. Used: Offer both new and used car options by extracting current market values.
+## Quick start
 
-## Data Collection
-Since the idea of buying data from companies that provide APIs like Edmunds.com and Cars.com is expensive, I am considering web scraping multiple reputable sites to get all of this data. I will need to develop individual web scrapers for each site I plan to scrape car data from.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend.app:app --host 0.0.0.0 --port 8000
+```
 
-Planned Scraping Targets:
-1. CarGurus.com - A platform for both new and used cars, with pricing information and detailed reviews.
-2. Cars.com - A marketplace offering a variety of cars with extensive details on each listing.
-3. Edmunds.com - A popular resource with pricing, reviews, and expert advice on cars.
-4. Autotrader.com - A marketplace with a wide range of cars for sale.
-5. Craigslist - A site with listings for used cars in local areas, often with negotiable prices.
-6. TrueCar - A site for new and used cars, known for its transparent pricing and detailed car information.
-7. Carvana - An online used car retailer offering detailed information about car history and pricing.
+Open [http://localhost:8000](http://localhost:8000).
 
-### Data Points to Collect
--Car Make & Model
--Year of Manufacture
--Car Type (SUV, Sedan, Hatchback, etc.)
--Price when new
--Current Market Value (for used cars)
--Fuel Efficiency (MPG)
--Safety Rating
--Mileage (for used cars)
--Location of the listing
--Condition (new/used)
+### Demo mode (no API key)
 
-## Web Scraping
-Use web scraping tools like BeautifulSoup (Python) or Cheerio (Node.js) to scrape data from these sites.
-Implement scraping rate limits and error handling to respect the site's policies and avoid IP blocking.
-Consider using proxy servers or rotating IP addresses to avoid getting blocked by sites with strict anti-scraping measures.
-Save scraped data in an organized format (CSV, JSON) for further processing.
+If `OPENAI_API_KEY` is unset, the app runs a deterministic **demo advisor** that still drives the same stages, catalog scoring, and hex chart. Full LangChain + OpenAI tool-calling activates when the key is present:
 
-## Algorithm & Recommendation Engine
-The core of the project is the recommendation engine, which will be responsible for filtering and ranking cars based on user preferences. Key factors to consider in the recommendation process:
+```bash
+export OPENAI_API_KEY=sk-...
+export OPENAI_MODEL=gpt-4o-mini   # optional
+uvicorn backend.app:app --reload --port 8000
+```
 
-Price: Ensure the recommended car fits within the user's budget.
-Fuel Efficiency: Prioritize cars that have higher fuel efficiency, especially for users looking to save on fuel costs.
-Safety Ratings: Recommend cars with higher safety ratings for user peace of mind.
-Car Type: Ensure the car's type matches user preferences (e.g., SUV for more space, sedan for fuel efficiency).
-Market Value vs. Original Price: For used cars, provide insight into how much the car has depreciated.
-The algorithm will use weighted filters to score cars based on these criteria and return the top recommendations.
+## API
 
-## Future Features to Implement:
-User Accounts: Allow users to save their preferences and see new recommendations over time.
-Detailed Car Reviews: Include user-generated reviews and expert opinions from aggregated data.
-Price Negotiation Insights: Provide insights into whether the asking price for used cars is fair based on market data.
-Advanced Filtering: Additional filters for car features (e.g., electric, hybrid, automatic transmission).
-Data Validation & Accuracy
-Since the collected data will come from various sources, it's important to ensure its accuracy and consistency. The project will include a data validation step to:
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/session` | Start a quest session |
+| `POST` | `/api/chat` | `{ "message", "session_id?" }` |
+| `POST` | `/api/choice` | `{ "session_id?", "stage", "value" }` chip pick |
+| `GET`  | `/api/catalog` | Scored catalog (with images + powertrain fields) |
+| `GET`  | `/api/ev-tradeoffs` | EV vs gas tradeoff knowledge |
+| `GET`  | `/api/roi/defaults` | Default ROI assumptions + sample pairs |
+| `POST` | `/api/roi` | Break-even calculator (car ids or custom prices) |
+| `GET`  | `/recommendations/?budget=` | Legacy filter (DB or catalog fallback) |
+| `GET`  | `/health` | Liveness |
 
-Check for duplicate listings. A lot of cars are cross-posted
-Cross-verify prices with trusted sources.
-Identify outliers (e.g., abnormally high or low prices) to filter out incorrect data.
+### Try the ROI calculator
 
-## Note to Self
-1. Car Prices: Collect prices for cars when they were new and compare them to their current market value (for used cars). Ensure we capture both historical and current prices to provide better insights for users.
-2. Data Integrity: Maintain consistency across different sources and handle cases where data might be missing or inconsistent.
-3. Legal Considerations: Review scraping legality and respect the terms of service for each website we scrape from.
-4. Scaling: Plan for scaling the algorithm if we decide to support additional data sources or improve recommendations.
+1. Open the app and scroll to **EV vs gas ROI**.
+2. Pick a pair (e.g. Model 3 vs Camry), set miles/year and incentive, click **Calculate break-even**.
+3. Or chat: `EV vs gas ROI for Model 3 vs Camry at 12000 miles/year` / click **Ask EV vs gas**.
 
-## Tech Stack
-Backend: Flask (Python) / FastAPI for the API implementation
-Web Scraping: BeautifulSoup, Scrapy, or Selenium for scraping car data
-Database: SQLite or PostgreSQL to store scraped data (you can scale it to any SQL or NoSQL database as needed)
-Testing: Pytest (Python) for testing API endpoints and business logic
-Deployment: Heroku / Docker / AWS for easy deployment and scaling
+## Project layout
+
+```
+backend/
+  app.py                   # FastAPI + static UI
+  agent.py                 # LangChain agent + demo fallback
+  recommendation_engine.py # Hex scoring + game stages
+  catalog.py               # Curated inventory loader
+  models.py                # SQLAlchemy Car model
+  scraper*/                # Existing site scrapers
+frontend/                  # DriveQuest chat + radar UI
+data/car_catalog.json      # Seed inventory (includes scraped-inspired rows)
+```
+
+## Scrapers
+
+Existing Cars.com / CarGurus / Autotrader scrapers are unchanged. Catalog rows can be refreshed from scraped CSVs; `data/car_catalog.json` is the live source for the conversational advisor.
+
+## Docker
+
+```bash
+docker build -t drivequest .
+docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY drivequest
+```
