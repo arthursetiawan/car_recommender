@@ -1,9 +1,28 @@
 (() => {
-  const COLORS = ["#c45c26", "#1f7a6c", "#3d6ea8", "#8a4f2b", "#5b7c5a", "#b45309"];
+  const COLORS = ["#c45c26", "#1a7a6c", "#3d6ea8", "#8a4f2b", "#5b7c5a", "#b45309"];
+
+  const STEP_META = [
+    { id: "budget", label: "Budget", short: "1" },
+    { id: "body", label: "Type", short: "2" },
+    { id: "priority", label: "Priority", short: "3" },
+    { id: "condition", label: "New/used", short: "4" },
+    { id: "compare", label: "Compare", short: "5" },
+    { id: "decide", label: "Best match", short: "6" },
+  ];
+
+  const STEP_TITLES = {
+    budget: "Step 1 · Budget",
+    body: "Step 2 · Vehicle type",
+    priority: "Step 3 · What matters most",
+    condition: "Step 4 · New or used",
+    compare: "Step 5 · Compare options",
+    decide: "Step 6 · Your best match",
+  };
 
   const els = {
     messages: document.getElementById("messages"),
     choices: document.getElementById("choices"),
+    choiceHint: document.getElementById("choice-hint"),
     form: document.getElementById("chat-form"),
     input: document.getElementById("chat-input"),
     modeBadge: document.getElementById("mode-badge"),
@@ -14,10 +33,16 @@
     radarSub: document.getElementById("radar-sub"),
     bestCard: document.getElementById("best-card"),
     gallery: document.getElementById("contender-gallery"),
+    emptyCompare: document.getElementById("empty-compare"),
+    compareLive: document.getElementById("compare-live"),
+    questSteps: document.getElementById("quest-steps"),
+    stepLabel: document.getElementById("step-label"),
     roiForm: document.getElementById("roi-form"),
     roiPair: document.getElementById("roi-pair"),
     customPrices: document.getElementById("custom-prices"),
     roiResult: document.getElementById("roi-result"),
+    roiToggle: document.getElementById("roi-toggle"),
+    roiPanel: document.querySelector(".roi-panel"),
   };
 
   function carImage(car) {
@@ -43,13 +68,34 @@
     els.messages.scrollTop = els.messages.scrollHeight;
   }
 
+  function renderSteps(stageId) {
+    const idx = STEP_META.findIndex((s) => s.id === stageId);
+    const active = idx < 0 ? 0 : idx;
+    els.questSteps.innerHTML = STEP_META.map((step, i) => {
+      const state = i < active ? "is-done" : i === active ? "is-active" : "";
+      return `<li class="${state}"><span class="num">${step.short}</span><span class="label-full">${step.label}</span></li>`;
+    }).join("");
+    els.stepLabel.textContent = STEP_TITLES[stageId] || STEP_TITLES.budget;
+  }
+
   function renderChoices(stage) {
     els.choices.innerHTML = "";
-    if (!stage || !stage.choices || !stage.choices.length) return;
-    stage.choices.forEach((choice) => {
+    const hasChoices = stage && stage.choices && stage.choices.length;
+    els.choiceHint.textContent = hasChoices
+      ? "Tap a choice to continue"
+      : "Type a reply below, or ask about EV savings";
+    els.choiceHint.classList.toggle("is-quiet", !hasChoices);
+    if (!hasChoices) return;
+
+    stage.choices.forEach((choice, i) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "choice-chip";
+      btn.className = "choice-chip" + (i === 0 && stage.stage === "decide" ? " is-primary" : "");
+      // Highlight primary actions on compare/decide
+      const val = String(choice.value);
+      if (val === "best" || val === "done" || (stage.stage === "budget" && i === 1)) {
+        btn.classList.add("is-primary");
+      }
       btn.textContent = choice.label;
       btn.addEventListener("click", () => sendChoice(stage.stage, choice.value, choice.label));
       els.choices.appendChild(btn);
@@ -57,9 +103,15 @@
   }
 
   function setModeBadge(payload) {
-    const mode = payload.mode === "langchain" ? "LangChain agent" : "Demo advisor";
-    const key = payload.openai_configured ? " · OpenAI on" : " · no API key";
+    const mode = payload.mode === "langchain" ? "Live advisor" : "Demo advisor";
+    const key = payload.openai_configured ? "" : " · works without an API key";
+    els.modeBadge.hidden = false;
     els.modeBadge.textContent = mode + key;
+  }
+
+  function setCompareVisibility(hasCars) {
+    els.emptyCompare.classList.toggle("hidden", hasCars);
+    els.compareLive.classList.toggle("hidden", !hasCars);
   }
 
   function renderBest(contenders, prefs) {
@@ -74,8 +126,9 @@
     els.bestCard.innerHTML = `
       <img src="${carImage(best)}" alt="${label}" loading="lazy" />
       <div class="best-body">
-        <h3>Best pick: ${label}</h3>
-        <p>$${Number(best.price).toLocaleString()} · overall ${best.overall}/10 · ${best.summary || ""}</p>
+        <span class="best-eyebrow">Best match for you</span>
+        <h3>${label}</h3>
+        <p>$${Number(best.price).toLocaleString()} · score ${best.overall}/10 · ${best.summary || ""}</p>
       </div>
     `;
   }
@@ -143,23 +196,20 @@
       ["Value", "Budget Fit", "Reliability", "Efficiency", "Safety", "Practicality"];
     const sides = labels.length;
 
-    // Grid rings
     for (let ring = 1; ring <= 5; ring++) {
       const pts = polygonPoints(cx, cy, (radius * ring) / 5, sides);
-      drawPath(ctx, pts, { stroke: "rgba(19,32,44,0.12)", width: 1 });
+      drawPath(ctx, pts, { stroke: "rgba(16,24,32,0.1)", width: 1 });
     }
-    // Axes
     for (let i = 0; i < sides; i++) {
       const angle = -Math.PI / 2 + (i * 2 * Math.PI) / sides;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
-      ctx.strokeStyle = "rgba(19,32,44,0.15)";
+      ctx.strokeStyle = "rgba(16,24,32,0.12)";
       ctx.stroke();
     }
-    // Labels
-    ctx.fillStyle = "#3d5163";
-    ctx.font = "600 12px Manrope, sans-serif";
+    ctx.fillStyle = "#4a5d6e";
+    ctx.font = "650 12px Manrope, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     for (let i = 0; i < sides; i++) {
@@ -173,7 +223,7 @@
       const values = car.hex_values || Object.values(car.metrics || {});
       const pts = polygonPoints(cx, cy, radius, sides, values);
       const color = COLORS[idx % COLORS.length];
-      drawPath(ctx, pts, { fill: color, stroke: color, width: 2.2, alpha: 0.22 });
+      drawPath(ctx, pts, { fill: color, stroke: color, width: 2.2, alpha: 0.2 });
       drawPath(ctx, pts, { stroke: color, width: 2.2, alpha: 0.95 });
       pts.forEach(([x, y]) => {
         ctx.beginPath();
@@ -197,21 +247,28 @@
     });
   }
 
-  function applyPayload(payload, { silentUser } = {}) {
+  function applyPayload(payload) {
     sessionId = payload.session_id;
     setModeBadge(payload);
-    if (!silentUser && payload.reply) addBubble("assistant", payload.reply);
+    if (payload.reply) addBubble("assistant", payload.reply);
+    const stageId = (payload.stage && payload.stage.stage) || (payload.prefs && payload.prefs.stage) || "budget";
+    renderSteps(stageId);
     renderChoices(payload.stage);
     lastContenders = payload.contenders || [];
-    if (lastContenders.length) {
-      els.radarSub.textContent = `${lastContenders.length} contender${lastContenders.length === 1 ? "" : "s"} on the hex board.`;
+    const hasCars = lastContenders.length > 0;
+    setCompareVisibility(hasCars);
+    if (hasCars) {
+      els.radarSub.textContent =
+        lastContenders.length === 1
+          ? "Here’s your top match on the chart."
+          : `${lastContenders.length} options scored on six traits.`;
+      drawRadar(lastContenders);
+      renderGallery(lastContenders);
+      renderLegend(lastContenders);
+      renderBest(lastContenders, payload.prefs);
     } else {
-      els.radarSub.textContent = "Contenders appear as you narrow the field.";
+      els.radarSub.textContent = "Answer a few questions — matches show up here.";
     }
-    drawRadar(lastContenders);
-    renderGallery(lastContenders);
-    renderLegend(lastContenders);
-    renderBest(lastContenders, payload.prefs);
     if (payload.roi) renderRoi(payload.roi);
   }
 
@@ -223,11 +280,11 @@
     if (!roi) return;
     const payback =
       roi.years_to_roi == null
-        ? "Does not break even"
+        ? "Doesn’t break even"
         : roi.years_to_roi === 0
-          ? "Day-one win"
-          : `${roi.years_to_roi} yrs · ${roi.months_to_roi} mo`;
-    const evLabel = (roi.ev_car && roi.ev_car.label) || "EV";
+          ? "Pays off day one"
+          : `${roi.years_to_roi} years`;
+    const evLabel = (roi.ev_car && roi.ev_car.label) || "Electric";
     const gasLabel = (roi.gas_car && roi.gas_car.label) || "Gas";
     const evImg = (roi.ev_car && roi.ev_car.image) || "";
     const gasImg = (roi.gas_car && roi.gas_car.image) || "";
@@ -240,15 +297,15 @@
         : "";
     els.roiResult.innerHTML = `
       ${photos}
-      <h3>Break-even</h3>
+      <h3>Time to break even</h3>
       <div class="payback">${payback}</div>
       <ul class="roi-metrics">
-        <li>Upfront premium<strong>${money(roi.upfront_premium)}</strong></li>
-        <li>Annual savings<strong>${money(roi.annual_total_savings)}</strong></li>
-        <li>Fuel/energy save<strong>${money(roi.annual_fuel_savings)}</strong></li>
-        <li>Maint. save<strong>${money(roi.annual_maintenance_savings)}</strong></li>
-        <li>5-year net<strong>${roi.savings_at_5_years == null ? "—" : money(roi.savings_at_5_years)}</strong></li>
-        <li>EV energy/yr<strong>${money(roi.annual_ev_energy_cost)}</strong></li>
+        <li>Extra you pay upfront<strong>${money(roi.upfront_premium)}</strong></li>
+        <li>You save each year<strong>${money(roi.annual_total_savings)}</strong></li>
+        <li>Fuel / energy<strong>${money(roi.annual_fuel_savings)}</strong></li>
+        <li>Maintenance<strong>${money(roi.annual_maintenance_savings)}</strong></li>
+        <li>After 5 years<strong>${roi.savings_at_5_years == null ? "—" : money(roi.savings_at_5_years)}</strong></li>
+        <li>EV energy / year<strong>${money(roi.annual_ev_energy_cost)}</strong></li>
       </ul>
       <p class="roi-verdict">${roi.verdict || ""}</p>
     `;
@@ -282,7 +339,7 @@
     });
     const data = await res.json();
     if (!res.ok) {
-      els.roiResult.innerHTML = `<p class="roi-placeholder">${data.detail || "ROI failed"}</p>`;
+      els.roiResult.innerHTML = `<div class="roi-empty"><h3>Couldn’t calculate</h3><p>${data.detail || "Check the numbers and try again."}</p></div>`;
       return;
     }
     renderRoi(data);
@@ -327,14 +384,20 @@
 
   els.resetBtn.addEventListener("click", () => startSession());
   els.askEvBtn.addEventListener("click", () => {
-    sendChat("EV vs gas tradeoffs — charging, fuel cost, maintenance, incentives, cold weather, and resale. Then give an ROI estimate for Model 3 vs Camry at 12,000 miles/year.");
+    sendChat(
+      "Honest take: EV vs gas for someone like me — charging, running costs, upkeep, incentives, cold weather, and resale. Then estimate break-even for Model 3 vs Camry at 12,000 miles/year."
+    );
   });
   els.roiPair.addEventListener("change", () => {
     els.customPrices.classList.toggle("hidden", els.roiPair.value !== "custom");
   });
   els.roiForm.addEventListener("submit", runRoiCalculator);
+  els.roiToggle.addEventListener("click", () => {
+    const collapsed = els.roiPanel.classList.toggle("is-collapsed");
+    els.roiToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  });
 
   startSession().catch((err) => {
-    addBubble("assistant", `Could not start session: ${err.message}`);
+    addBubble("assistant", `Couldn’t start — ${err.message}. Refresh and try again.`);
   });
 })();

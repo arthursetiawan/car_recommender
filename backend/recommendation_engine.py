@@ -219,7 +219,7 @@ STAGE_ORDER = ["budget", "body", "priority", "condition", "compare", "decide"]
 
 STAGE_PROMPTS = {
     "budget": {
-        "prompt": "What's your max budget for the car?",
+        "prompt": "What’s the most you’re comfortable spending?",
         "choices": [
             {"id": "budget_15k", "label": "Under $15k", "value": 15000},
             {"id": "budget_25k", "label": "Around $25k", "value": 25000},
@@ -228,42 +228,42 @@ STAGE_PROMPTS = {
         ],
     },
     "body": {
-        "prompt": "What kind of vehicle fits your life?",
+        "prompt": "What body style fits your day-to-day?",
         "choices": [
             {"id": "body_sedan", "label": "Sedan", "value": "sedan"},
-            {"id": "body_suv", "label": "SUV / Crossover", "value": "suv"},
+            {"id": "body_suv", "label": "SUV", "value": "suv"},
             {"id": "body_hatch", "label": "Hatchback", "value": "hatchback"},
             {"id": "body_truck", "label": "Truck", "value": "truck"},
             {"id": "body_wagon", "label": "Wagon", "value": "wagon"},
-            {"id": "body_any", "label": "Surprise me", "value": "any"},
+            {"id": "body_any", "label": "No preference", "value": "any"},
         ],
     },
     "priority": {
-        "prompt": "Which tradeoff matters most right now?",
+        "prompt": "What matters most for you?",
         "choices": [
             {"id": "pri_reliability", "label": "Reliability", "value": "reliability"},
-            {"id": "pri_value", "label": "Best value / deal", "value": "value"},
-            {"id": "pri_efficiency", "label": "Fuel / energy efficiency", "value": "efficiency"},
-            {"id": "pri_practicality", "label": "Space & practicality", "value": "practicality"},
+            {"id": "pri_value", "label": "Best deal", "value": "value"},
+            {"id": "pri_efficiency", "label": "Low running costs", "value": "efficiency"},
+            {"id": "pri_practicality", "label": "Space & usefulness", "value": "practicality"},
             {"id": "pri_safety", "label": "Safety", "value": "safety"},
         ],
     },
     "condition": {
-        "prompt": "New, used, or either?",
+        "prompt": "New, used, or either is fine?",
         "choices": [
-            {"id": "cond_used", "label": "Used (more value)", "value": "used"},
+            {"id": "cond_used", "label": "Used", "value": "used"},
             {"id": "cond_new", "label": "New", "value": "new"},
-            {"id": "cond_either", "label": "Either works", "value": "either"},
+            {"id": "cond_either", "label": "Either is fine", "value": "either"},
         ],
     },
     "compare": {
-        "prompt": "Here are your contenders — eliminate one or shortlist favorites.",
+        "prompt": "Here are strong fits — keep favorites or pass on ones that don’t feel right.",
         "choices": [],
     },
     "decide": {
-        "prompt": "Ready for the best pick, or keep comparing?",
+        "prompt": "Want your best overall match, or keep comparing?",
         "choices": [
-            {"id": "decide_best", "label": "Crown the best pick", "value": "best"},
+            {"id": "decide_best", "label": "Show my best match", "value": "best"},
             {"id": "decide_reset", "label": "Start over", "value": "reset"},
         ],
     },
@@ -355,19 +355,19 @@ def next_stage_payload(prefs: PreferenceState, contenders: list[dict[str, Any]] 
             label = f"{car['year']} {car['make']} {car['model']}"
             choices.append(
                 {
-                    "id": f"elim_{car['id']}",
-                    "label": f"Eliminate {label}",
-                    "value": f"eliminate:{car['id']}",
+                    "id": f"short_{car['id']}",
+                    "label": f"Keep {label}",
+                    "value": f"shortlist:{car['id']}",
                 }
             )
             choices.append(
                 {
-                    "id": f"short_{car['id']}",
-                    "label": f"Shortlist {label}",
-                    "value": f"shortlist:{car['id']}",
+                    "id": f"elim_{car['id']}",
+                    "label": f"Pass on {label}",
+                    "value": f"eliminate:{car['id']}",
                 }
             )
-        choices.append({"id": "compare_done", "label": "I've narrowed enough →", "value": "done"})
+        choices.append({"id": "compare_done", "label": "I’m ready — show my best match", "value": "done"})
         meta["choices"] = choices
     return {
         "stage": stage,
