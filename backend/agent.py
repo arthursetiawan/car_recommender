@@ -39,20 +39,29 @@ except ImportError:  # pragma: no cover
 SESSIONS: dict[str, dict[str, Any]] = {}
 
 
-SYSTEM_PROMPT = """You are DriveQuest, a conversational car-buying advisor.
-Your job: help users pick a car through a playful, progressive set of decisions.
-Focus on value, budget fit, reliability, efficiency, safety, and practicality.
+SYSTEM_PROMPT = """You are DriveQuest — a veteran car salesperson who does NOT care about commission,
+closing a deal, or steering someone into a higher trim. Your only success metric is whether
+this buyer ends up in the car that best fits THEIR life: budget, reliability, value, and
+day-to-day needs.
 
-You are trained on EV vs gas tradeoffs: charging access, fuel/energy cost, maintenance,
-incentives/tax credits, range & cold weather, and resale/depreciation. When users ask
-about EV vs gas value, call explain_ev_tradeoffs and/or calculate_ev_roi.
+Persona:
+- Warm, plain-spoken, and honest. You know the lot and the tradeoffs, but you never upsell.
+- If a cheaper / used / smaller car is the better fit, say so clearly.
+- If something is a bad idea for them (wrong body style, shaky reliability, EV without home charging), say that too.
+- Ask one clarifying question when something important is missing (commute, parking, winters, passengers).
+- No jargon unless you immediately translate it. Prefer “running costs” over “TCO”, “break-even” over “ROI” unless they used that word first.
 
-Rules:
-- Keep replies concise (2–4 sentences) and encouraging, game-like (levels, contenders, tradeoffs).
-- Prefer asking one decision at a time when preferences are incomplete.
-- When recommending, cite the hexagonal metrics (value, budget fit, reliability, efficiency, safety, practicality).
-- Use tools to update preferences, rank cars, explain EV tradeoffs, and run the ROI calculator — do not invent inventory or break-even numbers.
-- Never invent prices or reliability scores; trust tool output.
+How you help (progressive quest):
+1) Budget  2) Body style  3) What matters most  4) New vs used  5) Compare options  6) Best match
+Guide them one step at a time. Celebrate progress lightly — this should feel like narrowing choices, not filling a form.
+
+Metrics you may cite (from tools / hex chart): value, budget fit, reliability, efficiency, safety, practicality.
+EV vs gas: charging, energy cost, maintenance, incentives, range/cold weather, resale. Use explain_ev_tradeoffs
+and calculate_ev_roi when relevant — never invent break-even numbers or inventory.
+
+Style:
+- 2–4 short sentences, then a clear next action (“Tap a budget” / “Want me to show the best match?”).
+- Be encouraging without pressure. Never invent prices, scores, or cars — trust tool output.
 """
 
 
@@ -321,50 +330,52 @@ def _narrate_stage(prefs: PreferenceState, state: dict[str, Any]) -> str:
     cars = list_cars()
     if prefs.stage == "budget" and prefs.budget is None:
         return (
-            "Welcome to DriveQuest. Level 1 of 5 — set your budget. "
-            "What's your max spend? Pick a chip or say something like \"$25k\"."
+            "I’m here to find the car that actually fits you — not to sell you anything. "
+            "First: what’s the most you’re comfortable spending? Tap a choice or type an amount."
         )
     if prefs.stage == "body":
         return (
-            f"Budget locked at ${prefs.budget:,.0f}. Level 2 — vehicle type. "
-            "Sedan, SUV, hatchback, truck, wagon, or surprise me?"
+            f"Got it — we’ll stay near ${prefs.budget:,.0f}. "
+            "What body style fits your day-to-day: sedan, SUV, hatchback, truck, wagon, or no preference?"
         )
     if prefs.stage == "priority":
         return (
-            "Level 3 — tradeoff. What matters most: reliability, value, "
-            "efficiency, practicality, or safety?"
+            "What should we protect most: reliability, best deal, low running costs, "
+            "space & usefulness, or safety?"
         )
     if prefs.stage == "condition":
-        return f"Priority set to {prefs.priority}. Level 4 — new, used, or either?"
+        return (
+            f"We’ll weight {prefs.priority.replace('_', ' ')} a bit higher. "
+            "Do you want new, used, or either?"
+        )
     if prefs.stage in ("compare", "decide"):
         ranked = rank_cars(cars, prefs, limit=4)
         state["last_contenders"] = ranked
         if not ranked:
             return (
-                "No contenders survived those filters. Try raising budget, "
-                "widening body type, or say \"reset\"."
+                "Nothing left under those filters. Let’s loosen budget or body style — "
+                "or tap Start over."
             )
         if prefs.stage == "decide":
             best = ranked[0]
             m = best["metrics"]
             return (
-                f"Best pick: **{best['year']} {best['make']} {best['model']}** "
-                f"at ${best['price']:,.0f} (overall {best['overall']}/10). "
-                f"Hex scores — Value {m['value']}, Budget Fit {m['budget_fit']}, "
-                f"Reliability {m['reliability']}, Efficiency {m['efficiency']}, "
-                f"Safety {m['safety']}, Practicality {m['practicality']}. "
-                f"{best.get('summary', '')} Compare the radar chart, or say reset to replay."
+                f"Honest best match for you: **{best['year']} {best['make']} {best['model']}** "
+                f"at ${best['price']:,.0f} (score {best['overall']}/10). "
+                f"Strengths — reliability {m['reliability']}, budget fit {m['budget_fit']}, "
+                f"value {m['value']}, efficiency {m['efficiency']}. "
+                f"{best.get('summary', '')} Check the chart on the right, or start over anytime."
             )
         lines = [
-            f"Level 5 — Contenders! {len(ranked)} cars remain. Eliminate or shortlist:"
+            f"Here are {len(ranked)} solid options. Keep ones you like, pass on the rest:"
         ]
         for i, c in enumerate(ranked, 1):
             lines.append(
                 f"{i}. {c['year']} {c['make']} {c['model']} — ${c['price']:,.0f} "
-                f"(overall {c['overall']}; reliability {c['metrics']['reliability']}, "
+                f"(score {c['overall']}; reliability {c['metrics']['reliability']}, "
                 f"value {c['metrics']['value']})"
             )
-        lines.append("Use the chips, or ask for the best pick.")
+        lines.append("Or tap “show my best match” when you’re ready.")
         return "\n".join(lines)
     return STAGE_PROMPTS.get(prefs.stage, STAGE_PROMPTS["budget"])["prompt"]
 
@@ -385,8 +396,8 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
         state["last_contenders"] = []
         state["last_roi"] = None
         return (
-            "Quest reset! Level 1 — Budget. What's the most you want to spend? "
-            "Tap a chip or tell me a number."
+            "Fresh start. Still no sales pitch — just the best fit for you. "
+            "What’s your max budget? Tap a choice or type a number."
         )
 
     # EV vs gas advice + ROI (can interrupt the quest flow)
@@ -452,12 +463,12 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
         yrs = result["years_to_roi"]
         payback = f"{yrs:.1f} years" if yrs is not None else "never (at these inputs)"
         return (
-            f"EV ROI check — **{result['ev_car']['label']}** vs **{result['gas_car']['label']}**.\n"
-            f"Upfront EV premium (after incentives/charger): ${result['upfront_premium']:,.0f}.\n"
-            f"Annual savings (energy + maintenance): ${result['annual_total_savings']:,.0f}.\n"
-            f"Time to break even: **{payback}**.\n"
+            f"Straight numbers — **{result['ev_car']['label']}** vs **{result['gas_car']['label']}**.\n"
+            f"Extra you pay upfront (after incentives/charger): ${result['upfront_premium']:,.0f}.\n"
+            f"You save about ${result['annual_total_savings']:,.0f}/year on energy + upkeep.\n"
+            f"Break-even: **{payback}**.\n"
             f"{result['verdict']}\n"
-            "Tweak the ROI calculator panel on the right, or ask about charging / cold weather / incentives."
+            "Tweak the calculator below, or ask me about charging, winters, or incentives."
         )
 
     if wants_tradeoffs or (
@@ -472,7 +483,7 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
         lines = [advice, "", "Key tradeoffs:"]
         for t in topics["topics"][:4]:
             lines.append(f"- **{t['title']}**: {t['tip']}")
-        lines.append("Ask for an ROI / break-even estimate anytime — or use the calculator panel.")
+        lines.append("Want a break-even estimate? Ask me, or use the calculator below.")
         return "\n".join(lines)
 
     # Free-text preference sniffing
@@ -524,29 +535,27 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
     if prefs.stage == "budget" and prefs.budget is None:
         _save_prefs(state, prefs)
         return (
-            "Welcome to DriveQuest. Level 1 of 5 — set your budget. "
-            "What's your max spend? Pick a chip or say something like \"$25k\"."
+            "I’m here to find the car that fits you — not to push a sale. "
+            "What’s your max budget? Tap a choice or say something like \"$25k\"."
         )
 
     if prefs.stage == "body" and not prefs.body_types:
         _save_prefs(state, prefs)
         return (
-            f"Budget locked at ${prefs.budget:,.0f}. Level 2 — vehicle type. "
-            "Sedan, SUV, hatchback, truck, wagon, or surprise me?"
+            f"Budget near ${prefs.budget:,.0f} — good. "
+            "Sedan, SUV, hatchback, truck, wagon, or no preference?"
         )
 
     if prefs.stage == "priority" and not prefs.priority:
         _save_prefs(state, prefs)
         return (
-            "Level 3 — tradeoff. What matters most: reliability, value, "
-            "efficiency, practicality, or safety?"
+            "What matters most: reliability, best deal, low running costs, "
+            "space & usefulness, or safety?"
         )
 
     if prefs.stage == "condition" and not prefs.condition:
         _save_prefs(state, prefs)
-        return (
-            f"Priority set to {prefs.priority}. Level 4 — new, used, or either?"
-        )
+        return f"We’ll protect {prefs.priority.replace('_', ' ')}. New, used, or either?"
 
     if prefs.stage in ("compare", "decide") or (
         prefs.budget and prefs.body_types and prefs.priority and prefs.condition
@@ -558,8 +567,8 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
         _save_prefs(state, prefs)
         if not ranked:
             return (
-                "No contenders survived those filters. Try raising budget, "
-                "widening body type, or say \"reset\"."
+                "Nothing fits those filters. Raise the budget, widen the body style, "
+                "or say “start over”."
             )
         if "best" in text or "pick" in text or "recommend" in text or prefs.stage == "decide":
             best = ranked[0]
@@ -567,23 +576,22 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
             _save_prefs(state, prefs)
             m = best["metrics"]
             return (
-                f"Best pick: **{best['year']} {best['make']} {best['model']}** "
-                f"at ${best['price']:,.0f} (overall {best['overall']}/10). "
-                f"Hex scores — Value {m['value']}, Budget Fit {m['budget_fit']}, "
-                f"Reliability {m['reliability']}, Efficiency {m['efficiency']}, "
-                f"Safety {m['safety']}, Practicality {m['practicality']}. "
-                f"{best.get('summary', '')} Compare the radar chart, or say reset to replay."
+                f"Honest best match: **{best['year']} {best['make']} {best['model']}** "
+                f"at ${best['price']:,.0f} (score {best['overall']}/10). "
+                f"Reliability {m['reliability']}, budget fit {m['budget_fit']}, "
+                f"value {m['value']}, efficiency {m['efficiency']}. "
+                f"{best.get('summary', '')} See the chart on the right — or start over."
             )
         lines = [
-            f"Level 5 — Contenders! {len(ranked)} cars remain. Eliminate or shortlist:"
+            f"Here are {len(ranked)} strong options. Keep favorites or pass:"
         ]
         for i, c in enumerate(ranked, 1):
             lines.append(
                 f"{i}. {c['year']} {c['make']} {c['model']} — ${c['price']:,.0f} "
-                f"(overall {c['overall']}; reliability {c['metrics']['reliability']}, "
+                f"(score {c['overall']}; reliability {c['metrics']['reliability']}, "
                 f"value {c['metrics']['value']})"
             )
-        lines.append("Use the chips, or ask for the best pick.")
+        lines.append("Or ask me to show your best match.")
         return "\n".join(lines)
 
     _save_prefs(state, prefs)
@@ -648,9 +656,10 @@ def new_session() -> dict[str, Any]:
     return {
         "session_id": sid,
         "reply": (
-            "Welcome to DriveQuest — a car-buying quest focused on value, budget, "
-            "reliability, and EV vs gas tradeoffs. Level 1: set your budget to begin. "
-            "You can also ask about EV break-even anytime or use the ROI calculator."
+            "Welcome — I’m your DriveQuest advisor. Think of me as a car salesperson "
+            "who isn’t paid to close: I only care about the best car for *you* "
+            "(budget, reliability, value, lifestyle). "
+            "Start with your budget below, or ask anytime whether an EV is worth it."
         ),
         "mode": "langchain" if _openai_ready() else "demo",
         "langchain_available": LANGCHAIN_AVAILABLE,

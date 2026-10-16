@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DriveQuest — Car Advisor</title>
+    <title>DriveQuest — Find your best car</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/styles.css" />
@@ -16,96 +16,132 @@
     <div class="atmosphere" aria-hidden="true"></div>
     <div class="app">
       <header class="brand-bar">
-        <div class="brand">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <h1>DriveQuest</h1>
+        <div class="brand-row">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <div>
+              <h1>DriveQuest</h1>
+              <p class="tagline">An honest guide to the car that fits you — not a sales pitch.</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button type="button" id="ask-ev-btn" class="ghost-btn">EV vs gas?</button>
+            <button type="button" id="reset-btn" class="ghost-btn">Start over</button>
+          </div>
         </div>
-        <p class="tagline">Chat your way to a smarter car pick — value, budget, reliability.</p>
-        <div class="meta-row">
-          <span id="mode-badge" class="badge">booting…</span>
-          <button type="button" id="reset-btn" class="ghost-btn">Restart quest</button>
-          <button type="button" id="ask-ev-btn" class="ghost-btn">Ask EV vs gas</button>
-        </div>
+        <ol id="quest-steps" class="quest-steps" aria-label="Your progress"></ol>
       </header>
 
       <main class="board">
-        <section class="panel chat-panel" aria-label="Conversation">
+        <section class="panel chat-panel" aria-label="Advisor chat">
+          <div class="panel-kicker">
+            <span class="kicker">Step guide</span>
+            <span id="step-label" class="step-label">Step 1 · Budget</span>
+          </div>
           <div id="messages" class="messages" role="log" aria-live="polite"></div>
-          <div id="choices" class="choices" aria-label="Quest choices"></div>
-          <form id="chat-form" class="composer">
-            <label class="sr-only" for="chat-input">Message</label>
-            <input
-              id="chat-input"
-              type="text"
-              autocomplete="off"
-              placeholder="Budget, body type, EV vs gas, or ROI…"
-            />
-            <button type="submit" class="primary-btn">Send</button>
-          </form>
+          <div class="action-dock">
+            <p id="choice-hint" class="choice-hint">Tap a choice to continue</p>
+            <div id="choices" class="choices" aria-label="Next choices"></div>
+            <form id="chat-form" class="composer">
+              <label class="sr-only" for="chat-input">Or type a message</label>
+              <input
+                id="chat-input"
+                type="text"
+                autocomplete="off"
+                placeholder="Or type here — e.g. $30k, SUV, or is EV worth it?"
+              />
+              <button type="submit" class="primary-btn">Send</button>
+            </form>
+          </div>
         </section>
 
-        <section class="panel radar-panel" aria-label="Hexagonal comparison">
+        <section class="panel radar-panel" aria-label="Car comparison">
           <div class="panel-head">
-            <h2>Hex matchup</h2>
-            <p id="radar-sub">Contenders appear as you narrow the field.</p>
+            <div>
+              <span class="kicker">Compare</span>
+              <h2>How they stack up</h2>
+            </div>
+            <p id="radar-sub" class="panel-sub">Answer a few questions — matches show up here.</p>
           </div>
-          <div id="contender-gallery" class="contender-gallery" aria-label="Contender photos"></div>
-          <div class="radar-wrap">
-            <canvas id="hex-radar" width="420" height="420" aria-label="Radar chart"></canvas>
+
+          <div id="empty-compare" class="empty-compare">
+            <div class="empty-hex" aria-hidden="true"></div>
+            <h3>No matches yet</h3>
+            <p>Start with your budget on the left. We’ll narrow options and score them on value, budget fit, reliability, efficiency, safety, and usefulness.</p>
           </div>
-          <ul id="legend" class="legend"></ul>
-          <div id="best-card" class="best-card hidden"></div>
+
+          <div id="compare-live" class="compare-live hidden">
+            <div id="contender-gallery" class="contender-gallery" aria-label="Car photos"></div>
+            <div class="radar-wrap">
+              <canvas id="hex-radar" width="420" height="420" aria-label="Six-metric comparison chart"></canvas>
+            </div>
+            <ul id="legend" class="legend"></ul>
+            <div id="best-card" class="best-card hidden"></div>
+          </div>
         </section>
       </main>
 
-      <section class="panel roi-panel" aria-label="EV ROI calculator">
-        <div class="panel-head">
-          <h2>EV vs gas ROI</h2>
-          <p>Estimate time-to-break-even using price delta, energy costs, miles/year, maintenance, and incentives.</p>
-        </div>
-        <div class="roi-grid">
-          <form id="roi-form" class="roi-form">
-            <label>Compare pair
-              <select id="roi-pair">
-                <option value="tesla-model3-2021|toyota-camry-2022">Model 3 vs Camry</option>
-                <option value="chevrolet-bolt-2022|honda-civic-2023">Bolt vs Civic</option>
-                <option value="tesla-model3-2021|toyota-corolla-2023">Model 3 vs Corolla</option>
-                <option value="custom">Custom prices…</option>
-              </select>
-            </label>
-            <div id="custom-prices" class="custom-prices hidden">
-              <label>EV price ($)
-                <input id="roi-ev-price" type="number" min="0" step="100" value="24900" />
+      <section class="panel roi-panel" aria-label="EV savings calculator">
+        <button type="button" id="roi-toggle" class="roi-toggle" aria-expanded="true">
+          <div>
+            <span class="kicker">Optional</span>
+            <h2>Will an EV save you money?</h2>
+            <p>See how long until an electric car pays for itself versus a similar gas car.</p>
+          </div>
+          <span class="roi-chevron" aria-hidden="true"></span>
+        </button>
+        <div id="roi-body" class="roi-body">
+          <div class="roi-grid">
+            <form id="roi-form" class="roi-form">
+              <label>Cars to compare
+                <select id="roi-pair">
+                  <option value="tesla-model3-2021|toyota-camry-2022">Model 3 vs Camry</option>
+                  <option value="chevrolet-bolt-2022|honda-civic-2023">Bolt vs Civic</option>
+                  <option value="tesla-model3-2021|toyota-corolla-2023">Model 3 vs Corolla</option>
+                  <option value="custom">Enter my own prices…</option>
+                </select>
               </label>
-              <label>Gas price ($)
-                <input id="roi-gas-price" type="number" min="0" step="100" value="24500" />
+              <div id="custom-prices" class="custom-prices hidden">
+                <label>Electric car price ($)
+                  <input id="roi-ev-price" type="number" min="0" step="100" value="24900" />
+                </label>
+                <label>Gas car price ($)
+                  <input id="roi-gas-price" type="number" min="0" step="100" value="24500" />
+                </label>
+              </div>
+              <label>Miles you drive / year
+                <input id="roi-miles" type="number" min="1000" step="500" value="12000" />
               </label>
+              <label>Gas price ($ / gallon)
+                <input id="roi-gas-rate" type="number" min="0" step="0.05" value="3.60" />
+              </label>
+              <label>Home electricity ($ / kWh)
+                <input id="roi-elec" type="number" min="0" step="0.01" value="0.16" />
+              </label>
+              <label>Tax credit or rebate ($)
+                <input id="roi-incentive" type="number" min="0" step="100" value="0" />
+              </label>
+              <label>Home charger install ($)
+                <input id="roi-charger" type="number" min="0" step="50" value="800" />
+              </label>
+              <label>Yearly upkeep difference ($)
+                <input id="roi-maint" type="number" step="50" value="-400" title="Negative means the EV costs less to maintain" />
+              </label>
+              <p class="field-note">Upkeep difference: negative means the EV is cheaper to maintain each year.</p>
+              <button type="submit" class="primary-btn">Show break-even</button>
+            </form>
+            <div id="roi-result" class="roi-result">
+              <div class="roi-empty">
+                <h3>Results show up here</h3>
+                <p>Pick two cars and hit <strong>Show break-even</strong> — or ask in chat: “Is an EV worth it for me?”</p>
+              </div>
             </div>
-            <label>Miles / year
-              <input id="roi-miles" type="number" min="1000" step="500" value="12000" />
-            </label>
-            <label>Gas $/gallon
-              <input id="roi-gas-rate" type="number" min="0" step="0.05" value="3.60" />
-            </label>
-            <label>Electricity $/kWh
-              <input id="roi-elec" type="number" min="0" step="0.01" value="0.16" />
-            </label>
-            <label>Incentive / tax credit ($)
-              <input id="roi-incentive" type="number" min="0" step="100" value="0" />
-            </label>
-            <label>Home charger cost ($)
-              <input id="roi-charger" type="number" min="0" step="50" value="800" />
-            </label>
-            <label>Maint. delta $/yr (EV − gas)
-              <input id="roi-maint" type="number" step="50" value="-400" />
-            </label>
-            <button type="submit" class="primary-btn">Calculate break-even</button>
-          </form>
-          <div id="roi-result" class="roi-result">
-            <p class="roi-placeholder">Run the calculator or ask the chat about EV break-even.</p>
           </div>
         </div>
       </section>
+
+      <p id="mode-badge" class="mode-footnote" hidden>Demo mode</p>
+    </div>
     <script src="/static/app.js"></script>
   </body>
 </html>
