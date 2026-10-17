@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DriveQuest — Group inventory admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <style>
+      .admin { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.1rem 2.5rem; position: relative; z-index: 1; }
+      .admin-panel { background: rgba(248,250,251,.95); border-radius: 18px; padding: 1.2rem 1.25rem; box-shadow: 0 18px 50px rgba(16,28,40,.18); }
+      .admin-panel h1 { margin: 0 0 0.25rem; font-family: "Bricolage Grotesque", Georgia, serif; font-size: 1.7rem; }
+      .admin-panel .sub { margin: 0 0 1rem; color: #4a5d6e; }
+      .admin-grid { display: grid; gap: 1rem; }
+      textarea { width: 100%; min-height: 160px; border-radius: 12px; border: 1px solid rgba(16,24,32,.12); padding: 0.75rem; font: 0.85rem/1.4 ui-monospace, monospace; }
+      .row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+      .result { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 12px; background: #eef4f7; white-space: pre-wrap; font-size: 0.9rem; }
+      label.field { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; font-weight: 650; color: #4a5d6e; }
+      input[type="text"], input[type="password"] { padding: 0.55rem 0.7rem; border-radius: 10px; border: 1px solid rgba(16,24,32,.12); font: inherit; }
+      .locs { font-size: 0.85rem; color: #4a5d6e; margin: 0.25rem 0 0; }
+    </style>
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="admin">
+      <div class="admin-panel">
+        <h1 id="title">Dealer group inventory</h1>
+        <p class="sub" id="sub">Upload this period’s lot (Excel/CSV) or paste comma-delimited rows at the <strong>group</strong> level. Optional location scopes a rooftop merge.</p>
+
+        <div class="admin-grid">
+          <div class="row">
+            <label class="field">Group id
+              <input id="group" type="text" value="northstar-motors" />
+            </label>
+            <label class="field">Location id (optional)
+              <input id="location" type="text" value="" placeholder="downtown / westside" />
+            </label>
+            <label class="field">API key (optional in demo)
+              <input id="api-key" type="password" placeholder="dq_demo_northstar" />
+            </label>
+            <label class="field">Period label
+              <input id="period" type="text" placeholder="2026-10-17 or week-42" />
+            </label>
+          </div>
+          <p class="locs" id="locs"></p>
+
+          <div>
+            <h3 style="margin:0 0 0.4rem;font-family:Bricolage Grotesque,Georgia,serif">1) Excel / CSV upload</h3>
+            <div class="row">
+              <input id="file" type="file" accept=".csv,.xlsx,.xls,text/csv" />
+              <button id="upload-btn" class="primary-btn" type="button">Upload inventory</button>
+              <a class="ghost-btn" style="color:#13202c;border-color:#ccc;background:#fff" href="/api/templates/inventory.csv">CSV template</a>
+              <a class="ghost-btn" style="color:#13202c;border-color:#ccc;background:#fff" href="/api/templates/inventory.xlsx">Excel template</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="margin:0 0 0.4rem;font-family:Bricolage Grotesque,Georgia,serif">2) Paste this week’s lot</h3>
+            <textarea id="paste" placeholder="stock_number,year,make,model,price,mileage,body_type,fuel_type,condition,location_id&#10;NS-2001,2021,Honda,Civic,21900,24000,sedan,gas,used,downtown&#10;NS-2002,2022,Toyota,RAV4,26800,31000,suv,hybrid,used,westside"></textarea>
+            <div class="row" style="margin-top:0.55rem">
+              <button id="paste-btn" class="primary-btn" type="button">Parse &amp; replace inventory</button>
+              <a id="preview-link" class="ghost-btn" style="color:#13202c;border-color:#ccc;background:#fff" href="/embed/northstar-motors">Preview group widget</a>
+              <a id="preview-loc" class="ghost-btn" style="color:#13202c;border-color:#ccc;background:#fff" href="/embed/northstar-motors/downtown">Preview location</a>
+            </div>
+          </div>
+
+          <div id="result" class="result hidden"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const params = new URLSearchParams(location.search);
+      const groupInput = document.getElementById("group");
+      const locInput = document.getElementById("location");
+      if (params.get("group") || params.get("dealer")) {
+        groupInput.value = params.get("group") || params.get("dealer");
+      }
+      if (params.get("location")) locInput.value = params.get("location");
+
+      function previewHref() {
+        const id = groupInput.value.trim();
+        const loc = locInput.value.trim();
+        document.getElementById("preview-link").href = "/embed/" + encodeURIComponent(id);
+        document.getElementById("preview-loc").href = loc
+          ? `/embed/${encodeURIComponent(id)}/${encodeURIComponent(loc)}`
+          : `/embed/${encodeURIComponent(id)}`;
+      }
+
+      async function refreshTitle() {
+        const id = groupInput.value.trim();
+        const loc = locInput.value.trim();
+        previewHref();
+        try {
+          const q = loc ? `?location=${encodeURIComponent(loc)}` : "";
+          const res = await fetch("/api/groups/" + encodeURIComponent(id) + q);
+          if (!res.ok) return;
+          const d = await res.json();
+          document.getElementById("title").textContent =
+            (d.group_name || d.name) + " · inventory";
+          const locList = (d.locations || [])
+            .map((l) => `${l.id} (${l.name})`)
+            .join(" · ");
+          document.getElementById("locs").textContent = locList
+            ? "Rooftops: " + locList
+            : "No locations configured — inventory is group-wide.";
+          document.getElementById("sub").textContent =
+            (d.tagline || "") +
+            ` · ${d.inventory_count} vehicles live` +
+            (loc ? ` at ${loc}` : " for the group") +
+            ".";
+        } catch (_) {}
+      }
+      groupInput.addEventListener("change", refreshTitle);
+      locInput.addEventListener("change", refreshTitle);
+      refreshTitle();
+
+      function showResult(data) {
+        const el = document.getElementById("result");
+        el.classList.remove("hidden");
+        const errs = (data.errors || []).map((e) => `Row ${e.row}: ${e.message}`).join("\n");
+        el.textContent =
+          `Accepted: ${data.accepted}\nPeriod: ${data.period_label || "—"}\n` +
+          `Group: ${data.group_id || data.dealer_id || "—"}\n` +
+          `Location scope: ${data.location_id || "group-wide"}\n` +
+          (errs ? `\nFlagged rows:\n${errs}` : "\nNo bad rows.");
+        refreshTitle();
+      }
+
+      document.getElementById("upload-btn").onclick = async () => {
+        const file = document.getElementById("file").files[0];
+        if (!file) return alert("Choose a .xlsx or .csv file");
+        const fd = new FormData();
+        fd.append("file", file);
+        const period = document.getElementById("period").value.trim();
+        if (period) fd.append("period", period);
+        const loc = locInput.value.trim();
+        if (loc) fd.append("location_id", loc);
+        const headers = {};
+        const key = document.getElementById("api-key").value.trim();
+        if (key) headers["X-API-Key"] = key;
+        const id = groupInput.value.trim();
+        const res = await fetch(`/api/groups/${encodeURIComponent(id)}/inventory/upload`, {
+          method: "POST",
+          headers,
+          body: fd,
+        });
+        showResult(await res.json());
+      };
+
+      document.getElementById("paste-btn").onclick = async () => {
+        const text = document.getElementById("paste").value;
+        const id = groupInput.value.trim();
+        const loc = locInput.value.trim() || null;
+        const res = await fetch(`/api/groups/${encodeURIComponent(id)}/inventory/paste`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            group_id: id,
+            dealer_id: id,
+            text,
+            period: document.getElementById("period").value.trim() || null,
+            api_key: document.getElementById("api-key").value.trim() || null,
+            location_id: loc,
+          }),
+        });
+        showResult(await res.json());
+      };
+    </script>
+  </body>
+</html>

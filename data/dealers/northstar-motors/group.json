@@ -1,0 +1,30 @@
+{
+  "id": "northstar-motors",
+  "name": "Northstar Motors",
+  "tagline": "Honest picks from our lot — no pressure.",
+  "api_key": "dq_demo_northstar",
+  "branding": {
+    "primary": "#c45c26",
+    "primary_deep": "#9a3f14",
+    "accent": "#1a7a6c",
+    "logo_text": "Northstar"
+  },
+  "inventory": "inventory.json",
+  "persona_note": "You represent the Northstar Motors dealer group inventory only. Never invent cars not on this group's lot. When a location is set, prioritize that rooftop and say so.",
+  "locations": [
+    {
+      "id": "downtown",
+      "name": "Northstar Downtown",
+      "city": "Minneapolis",
+      "address": "1200 Nicollet Mall",
+      "tagline": "Downtown lot — commute-ready sedans and crossovers."
+    },
+    {
+      "id": "westside",
+      "name": "Northstar Westside",
+      "city": "St. Louis Park",
+      "address": "4800 Highway 7",
+      "tagline": "Westside lot — SUVs, wagons, and family haulers."
+    }
+  ]
+}

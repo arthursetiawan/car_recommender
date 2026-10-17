@@ -37,8 +37,8 @@ def test_roi_breaks_even_with_incentive():
 
 
 def test_roi_from_catalog_cars():
-    ev = get_car("tesla-model3-2021")
-    gas = get_car("toyota-camry-2022")
+    ev = get_car("tesla-model3-2021", "lakeside-ev")
+    gas = get_car("toyota-camry-2022", "lakeside-ev")
     result = roi_from_cars(ev, gas, incentive=0, miles_per_year=12000)
     assert result["ev_car"]["id"] == "tesla-model3-2021"
     assert result["gas_car"]["id"] == "toyota-camry-2022"
@@ -46,8 +46,8 @@ def test_roi_from_catalog_cars():
 
 
 def test_ev_score_boost_when_prefer_ev():
-    bolt = get_car("chevrolet-bolt-2022")
-    camry = get_car("toyota-camry-2022")
+    bolt = get_car("chevrolet-bolt-2022", "lakeside-ev")
+    camry = get_car("toyota-camry-2022", "lakeside-ev")
     prefs = {"prefer_ev": True, "priority": "efficiency"}
     bolt_m = score_car(bolt, budget=30000, prefs=prefs)
     camry_m = score_car(camry, budget=30000, prefs=prefs)
@@ -55,7 +55,7 @@ def test_ev_score_boost_when_prefer_ev():
 
 
 def test_powertrain_adjustments_gas_lean():
-    bolt = get_car("chevrolet-bolt-2022")
+    bolt = get_car("chevrolet-bolt-2022", "lakeside-ev")
     adj = powertrain_score_adjustments(bolt, {"prefer_ev": False})
     assert adj["practicality"] < 0
 
@@ -66,7 +66,7 @@ def test_advise_mentions_charging_context():
 
 
 def test_enrich_includes_image_and_powertrain():
-    car = enrich_car(get_car("tesla-model3-2021"), budget=30000)
+    car = enrich_car(get_car("tesla-model3-2021", "lakeside-ev"), budget=30000)
     assert car.get("image")
     assert car.get("powertrain") == "electric"
     assert car.get("range_miles")
