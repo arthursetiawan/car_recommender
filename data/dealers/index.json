@@ -1,0 +1,28 @@
+{
+  "groups": [
+    {
+      "id": "northstar-motors",
+      "name": "Northstar Motors",
+      "path": "northstar-motors"
+    },
+    {
+      "id": "lakeside-ev",
+      "name": "Lakeside EV & Hybrid",
+      "path": "lakeside-ev"
+    }
+  ],
+  "default_group": "northstar-motors",
+  "dealers": [
+    {
+      "id": "northstar-motors",
+      "name": "Northstar Motors",
+      "path": "northstar-motors"
+    },
+    {
+      "id": "lakeside-ev",
+      "name": "Lakeside EV & Hybrid",
+      "path": "lakeside-ev"
+    }
+  ],
+  "default_dealer": "northstar-motors"
+}

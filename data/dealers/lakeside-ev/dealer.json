@@ -1,0 +1,30 @@
+{
+  "id": "lakeside-ev",
+  "name": "Lakeside EV & Hybrid",
+  "tagline": "Find the right electric or hybrid — for your life, not our quota.",
+  "api_key": "dq_demo_lakeside",
+  "branding": {
+    "primary": "#0f766e",
+    "primary_deep": "#115e59",
+    "accent": "#ea580c",
+    "logo_text": "Lakeside"
+  },
+  "inventory": "inventory.json",
+  "persona_note": "You represent the Lakeside EV & Hybrid dealer group only. Be especially clear about charging, range, and incentives — still never upsell. When a location is set, prioritize that rooftop.",
+  "locations": [
+    {
+      "id": "harbor",
+      "name": "Lakeside Harbor",
+      "city": "Duluth",
+      "address": "200 Canal Park Dr",
+      "tagline": "Harbor showroom — EVs and efficient daily drivers."
+    },
+    {
+      "id": "lakefront",
+      "name": "Lakeside Lakefront",
+      "city": "Superior",
+      "address": "900 Tower Ave",
+      "tagline": "Lakefront lot — hybrids, crossovers, and value picks."
+    }
+  ]
+}

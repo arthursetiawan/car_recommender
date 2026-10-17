@@ -49,8 +49,86 @@
     return car.image || `/static/cars/${car.id}.jpg`;
   }
 
+  function resolveGroupId() {
+    if (window.__DQ_GROUP__) return window.__DQ_GROUP__;
+    if (window.__DQ_DEALER__) return window.__DQ_DEALER__;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("group")) return params.get("group");
+    if (params.get("dealer")) return params.get("dealer");
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    if ((parts[0] === "embed" || parts[0] === "admin") && parts[1]) return parts[1];
+    return null;
+  }
+
+  function resolveLocationId() {
+    if (window.__DQ_LOCATION__) return window.__DQ_LOCATION__;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("location")) return params.get("location");
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    if (parts[0] === "embed" && parts[2]) return parts[2];
+    return null;
+  }
+
   let sessionId = null;
   let lastContenders = [];
+  let dealerId = resolveGroupId(); // group id (alias kept for API payloads)
+  let locationId = resolveLocationId();
+  let dealerMeta = null;
+
+  function tenantQuery() {
+    const parts = [];
+    if (dealerId) parts.push(`group_id=${encodeURIComponent(dealerId)}`);
+    if (locationId) parts.push(`location_id=${encodeURIComponent(locationId)}`);
+    return parts.length ? `?${parts.join("&")}` : "";
+  }
+
+  function tenantBody(extra) {
+    const body = Object.assign({}, extra || {});
+    if (dealerId) {
+      body.group_id = dealerId;
+      body.dealer_id = dealerId;
+    }
+    if (locationId) body.location_id = locationId;
+    return body;
+  }
+
+  function applyBranding(dealer) {
+    if (!dealer) return;
+    dealerMeta = dealer;
+    dealerId = dealer.group_id || dealer.id || dealerId;
+    locationId = dealer.location_id || locationId;
+    const title = document.getElementById("dealer-title");
+    const tagline = document.getElementById("dealer-tagline");
+    if (title) title.textContent = dealer.name || "DriveQuest";
+    if (tagline) {
+      const scope =
+        dealer.scope === "location" && dealer.group_name
+          ? `${dealer.tagline || ""} · part of ${dealer.group_name}`
+          : dealer.tagline || tagline.textContent;
+      tagline.textContent = scope;
+    }
+    const b = dealer.branding || {};
+    if (b.primary) document.documentElement.style.setProperty("--copper", b.primary);
+    if (b.primary_deep) document.documentElement.style.setProperty("--copper-deep", b.primary_deep);
+    if (b.accent) {
+      document.documentElement.style.setProperty("--teal", b.accent);
+      document.documentElement.style.setProperty("--teal-deep", b.accent);
+    }
+    document.title = `${dealer.name || "DriveQuest"} — Find your best car`;
+  }
+
+  async function loadRoiPairs() {
+    if (!els.roiPair) return;
+    const res = await fetch(`/api/roi/defaults${tenantQuery()}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const pairs = data.sample_pairs || [];
+    if (!pairs.length) return;
+    els.roiPair.innerHTML = pairs
+      .map((p) => `<option value="${p.ev_car_id}|${p.gas_car_id}">${p.label}</option>`)
+      .concat(['<option value="custom">Enter my own prices…</option>'])
+      .join("");
+  }
 
   function formatReply(text) {
     const escaped = text
@@ -249,6 +327,7 @@
 
   function applyPayload(payload) {
     sessionId = payload.session_id;
+    if (payload.group || payload.dealer) applyBranding(payload.group || payload.dealer);
     setModeBadge(payload);
     if (payload.reply) addBubble("assistant", payload.reply);
     const stageId = (payload.stage && payload.stage.stage) || (payload.prefs && payload.prefs.stage) || "budget";
@@ -322,6 +401,7 @@
       home_charger_cost: Number(document.getElementById("roi-charger").value),
       annual_maintenance_delta: Number(document.getElementById("roi-maint").value),
     };
+    Object.assign(body, tenantBody());
     if (pair === "custom") {
       body.ev_price = Number(document.getElementById("roi-ev-price").value);
       body.gas_price = Number(document.getElementById("roi-gas-price").value);
@@ -347,9 +427,14 @@
 
   async function startSession() {
     els.messages.innerHTML = "";
-    const res = await fetch("/api/session", { method: "POST" });
+    const res = await fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(tenantBody()),
+    });
     const data = await res.json();
     applyPayload(data);
+    loadRoiPairs().catch(() => {});
   }
 
   async function sendChat(message) {
@@ -358,7 +443,7 @@
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, session_id: sessionId }),
+      body: JSON.stringify(tenantBody({ message, session_id: sessionId })),
     });
     const data = await res.json();
     applyPayload(data);
@@ -369,7 +454,7 @@
     const res = await fetch("/api/choice", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId, stage, value }),
+      body: JSON.stringify(tenantBody({ session_id: sessionId, stage, value })),
     });
     const data = await res.json();
     applyPayload(data);

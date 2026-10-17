@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DriveQuest — Dealer group plugin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <style>
+      .landing { max-width: 920px; margin: 0 auto; padding: 2rem 1.2rem 3rem; position: relative; z-index: 1; color: #f4f7fa; }
+      .landing h1 { font-family: "Bricolage Grotesque", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3.2rem); margin: 0 0 0.5rem; letter-spacing: -0.03em; }
+      .landing .lede { font-size: 1.05rem; color: #d8e2ec; max-width: 40rem; }
+      .dealer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+      .dealer-card { background: rgba(248,250,251,.94); color: #101820; border-radius: 18px; padding: 1.1rem 1.15rem; text-decoration: none; box-shadow: 0 18px 50px rgba(16,28,40,.18); display: block; }
+      .dealer-card h2 { margin: 0 0 0.25rem; font-family: "Bricolage Grotesque", Georgia, serif; font-size: 1.25rem; }
+      .dealer-card p { margin: 0 0 0.55rem; color: #4a5d6e; font-size: 0.9rem; }
+      .dealer-card .rooftops { margin: 0 0 0.75rem; font-size: 0.8rem; color: #6a7d8e; }
+      .dealer-card .links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .dealer-card a.btn { display: inline-block; padding: 0.45rem 0.8rem; border-radius: 999px; background: #1a7a6c; color: #fff; font-weight: 700; font-size: 0.82rem; text-decoration: none; }
+      .dealer-card a.btn.secondary { background: #c45c26; }
+      .dealer-card a.btn.ghost { background: #fff; color: #13202c; border: 1px solid rgba(16,24,32,.14); }
+      .snippet-box { background: rgba(16,24,32,.72); border: 1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 1rem 1.1rem; overflow-x: auto; }
+      .snippet-box code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; color: #e8f0f5; white-space: pre-wrap; }
+      .landing h3 { margin: 1.75rem 0 0.5rem; font-family: "Bricolage Grotesque", Georgia, serif; }
+      @media (max-width: 700px) { .dealer-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="landing">
+      <h1>DriveQuest for dealer groups</h1>
+      <p class="lede">
+        Embed an honest car advisor scoped to your <strong>dealer group</strong> inventory —
+        or optionally to one rooftop. Shoppers chat, compare on a hex chart, and check EV
+        break-even without seeing another group’s lot.
+      </p>
+
+      <h3>Sample groups</h3>
+      <div id="dealer-grid" class="dealer-grid"></div>
+
+      <h3>One-line install</h3>
+      <p class="lede">Group-wide (all rooftops):</p>
+      <div class="snippet-box">
+        <code id="snippet">&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors" async&gt;&lt;/script&gt;</code>
+      </div>
+      <p class="lede" style="margin-top:0.75rem">Single location (this store’s site):</p>
+      <div class="snippet-box">
+        <code id="snippet-loc">&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors&amp;location=downtown" async&gt;&lt;/script&gt;</code>
+      </div>
+
+      <h3>Inventory for this week</h3>
+      <p class="lede">
+        Group admin: Excel/CSV upload or comma-delimited paste. Template includes a
+        <code>location_id</code> column for multi-rooftop lots.
+        <a href="/api/templates/inventory.csv" style="color:#ffd7bf">CSV template</a>
+        ·
+        <a href="/api/templates/inventory.xlsx" style="color:#ffd7bf">Excel template</a>
+      </p>
+    </div>
+    <script>
+      (async () => {
+        const host = window.location.origin;
+        document.getElementById("snippet").textContent =
+          `<script src="${host}/widget.js?group=northstar-motors" async><\/script>`;
+        document.getElementById("snippet-loc").textContent =
+          `<script src="${host}/widget.js?group=northstar-motors&location=downtown" async><\/script>`;
+        const res = await fetch("/api/groups");
+        const data = await res.json();
+        const grid = document.getElementById("dealer-grid");
+        grid.innerHTML = (data.groups || data.dealers || [])
+          .map((d) => {
+            const locs = d.locations || [];
+            const locLinks = locs
+              .slice(0, 2)
+              .map(
+                (l) =>
+                  `<a class="btn ghost" href="/embed/${d.id}/${l.id}">${l.name || l.id}</a>`
+              )
+              .join("");
+            return `<article class="dealer-card">
+              <h2>${d.name}</h2>
+              <p>${d.tagline || ""} · ${d.inventory_count} vehicles (group)</p>
+              <p class="rooftops">${
+                locs.length
+                  ? "Locations: " + locs.map((l) => l.name || l.id).join(" · ")
+                  : "Single-lot group"
+              }</p>
+              <div class="links">
+                <a class="btn" href="/embed/${d.id}">Group widget</a>
+                ${locLinks}
+                <a class="btn secondary" href="/static/admin.html?group=${d.id}">Admin / inventory</a>
+              </div>
+            </article>`;
+          })
+          .join("");
+      })();
+    </script>
+  </body>
+</html>

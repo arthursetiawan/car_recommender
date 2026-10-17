@@ -13,7 +13,13 @@ import uuid
 from typing import Any
 
 from catalog import get_car, list_cars
-from ev_tradeoffs import DEFAULT_ASSUMPTIONS, advise_ev_vs_gas, summarize_tradeoffs
+from dealers import (
+    default_group_id,
+    load_group,
+    public_group_config,
+    resolve_group,
+)
+from ev_tradeoffs import DEFAULT_ASSUMPTIONS, advise_ev_vs_gas, fuel_category, summarize_tradeoffs
 from recommendation_engine import (
     PreferenceState,
     STAGE_PROMPTS,
@@ -65,16 +71,87 @@ Style:
 """
 
 
-def _session(session_id: str | None) -> tuple[str, dict[str, Any]]:
+def _system_prompt_for(group: dict[str, Any], location_id: str | None = None) -> str:
+    name = group.get("name") or "this dealership group"
+    note = group.get("persona_note") or f"You only recommend cars currently in the {name} inventory."
+    loc_note = ""
+    if location_id:
+        for loc in group.get("locations") or []:
+            if loc["id"] == location_id:
+                loc_note = (
+                    f" This embed is scoped to the {loc.get('name') or location_id} rooftop — "
+                    "prefer vehicles at this location, and say so when a better group-wide fit exists elsewhere."
+                )
+                break
+    return (
+        SYSTEM_PROMPT
+        + f"\n\nDealer group context: You are embedded for {name}. "
+        + f"{note}{loc_note} Inventory is limited to this group's stock — never invent vehicles."
+    )
+
+
+def _session(
+    session_id: str | None,
+    group_id: str | None = None,
+    location_id: str | None = None,
+    *,
+    dealer_id: str | None = None,
+) -> tuple[str, dict[str, Any]]:
     sid = session_id or str(uuid.uuid4())
+    gid = group_id or dealer_id
     if sid not in SESSIONS:
+        resolved = gid or default_group_id()
         SESSIONS[sid] = {
+            "group_id": resolved,
+            "dealer_id": resolved,
+            "location_id": location_id,
             "prefs": PreferenceState().to_dict(),
             "messages": [],
             "last_contenders": [],
             "last_roi": None,
         }
+    else:
+        existing_gid = SESSIONS[sid].get("group_id") or SESSIONS[sid].get("dealer_id")
+        if gid and existing_gid != gid:
+            raise ValueError("session belongs to a different dealer group")
+        if location_id is not None and SESSIONS[sid].get("location_id") not in (None, location_id):
+            # Allow first pin; reject silent rooftop switches
+            if SESSIONS[sid].get("location_id") and SESSIONS[sid].get("location_id") != location_id:
+                raise ValueError("session belongs to a different location")
+        if location_id and not SESSIONS[sid].get("location_id"):
+            SESSIONS[sid]["location_id"] = location_id
     return sid, SESSIONS[sid]
+
+
+def _group_id(state: dict[str, Any]) -> str:
+    return state.get("group_id") or state.get("dealer_id") or default_group_id()
+
+
+def _dealer_id(state: dict[str, Any]) -> str:
+    return _group_id(state)
+
+
+def _location_id(state: dict[str, Any]) -> str | None:
+    return state.get("location_id")
+
+
+def _cars(state: dict[str, Any]) -> list[dict[str, Any]]:
+    return list_cars(_group_id(state), _location_id(state))
+
+
+def _find_car(state: dict[str, Any], car_id: str) -> dict[str, Any] | None:
+    return get_car(car_id, _group_id(state), _location_id(state))
+
+
+def _pick_ev_gas_pair(state: dict[str, Any]) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    cars = _cars(state)
+    ev = next((c for c in cars if fuel_category(c) == "electric"), None)
+    if not ev:
+        ev = next((c for c in cars if fuel_category(c) == "hybrid"), None)
+    gas = next((c for c in cars if fuel_category(c) == "gas"), None)
+    if not gas:
+        gas = next((c for c in cars if c["id"] != (ev or {}).get("id")), None)
+    return ev, gas
 
 
 def _prefs(state: dict[str, Any]) -> PreferenceState:
@@ -138,7 +215,7 @@ def build_tools(state: dict[str, Any]):
     def rank_contenders(limit: int = 4) -> str:
         """Rank remaining cars with hexagonal metrics given current preferences."""
         prefs = _prefs(state)
-        ranked = rank_cars(list_cars(), prefs, limit=limit)
+        ranked = rank_cars(_cars(state), prefs, limit=limit)
         state["last_contenders"] = ranked
         slim = [
             {
@@ -151,13 +228,21 @@ def build_tools(state: dict[str, Any]):
             }
             for c in ranked
         ]
-        return json.dumps({"count": len(slim), "cars": slim})
+        return json.dumps(
+            {
+                "count": len(slim),
+                "cars": slim,
+                "group_id": _group_id(state),
+                "dealer_id": _group_id(state),
+                "location_id": _location_id(state),
+            }
+        )
 
     @tool
     def get_best_pick() -> str:
         """Return the single best remaining pick and advance to decide stage."""
         prefs = _prefs(state)
-        ranked = rank_cars(list_cars(), prefs, limit=1)
+        ranked = rank_cars(_cars(state), prefs, limit=1)
         prefs.stage = "decide"
         _save_prefs(state, prefs)
         state["last_contenders"] = ranked
@@ -224,10 +309,10 @@ def build_tools(state: dict[str, Any]):
             _save_prefs(state, prefs)
 
         if ev_car_id and gas_car_id:
-            ev_car = get_car(ev_car_id)
-            gas_car = get_car(gas_car_id)
+            ev_car = _find_car(state, ev_car_id)
+            gas_car = _find_car(state, gas_car_id)
             if not ev_car or not gas_car:
-                return json.dumps({"error": "Unknown car id for EV or gas comparison."})
+                return json.dumps({"error": "Unknown car id for this dealer's inventory."})
             result = roi_from_cars(
                 ev_car,
                 gas_car,
@@ -239,9 +324,9 @@ def build_tools(state: dict[str, Any]):
             )
         else:
             if ev_price is None or gas_price is None:
-                # Sensible catalog defaults: Model 3 vs Camry
-                ev_car = get_car("tesla-model3-2021")
-                gas_car = get_car("toyota-camry-2022")
+                ev_car, gas_car = _pick_ev_gas_pair(state)
+                if not ev_car or not gas_car:
+                    return json.dumps({"error": "This lot needs both an EV/hybrid and a gas car for ROI."})
                 result = roi_from_cars(
                     ev_car,
                     gas_car,
@@ -285,7 +370,8 @@ def _run_langchain_turn(state: dict[str, Any], user_message: str) -> str:
     tools = build_tools(state)
     llm = ChatOpenAI(model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"), temperature=0.4)
     llm_with_tools = llm.bind_tools(tools)
-    history = [SystemMessage(content=SYSTEM_PROMPT)]
+    group_cfg = load_group(_group_id(state))
+    history = [SystemMessage(content=_system_prompt_for(group_cfg, _location_id(state)))]
     for msg in state["messages"][-12:]:
         if msg["role"] == "user":
             history.append(HumanMessage(content=msg["content"]))
@@ -327,7 +413,7 @@ def _parse_budget(text: str) -> float | None:
 
 def _narrate_stage(prefs: PreferenceState, state: dict[str, Any]) -> str:
     """Produce the next game prompt from current prefs (used after UI chips)."""
-    cars = list_cars()
+    cars = _cars(state)
     if prefs.stage == "budget" and prefs.budget is None:
         return (
             "I’m here to find the car that actually fits you — not to sell you anything. "
@@ -384,7 +470,7 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
     """Deterministic progressive advisor when no LLM key is configured."""
     prefs = _prefs(state)
     text = user_message.strip().lower()
-    cars = list_cars()
+    cars = _cars(state)
 
     # UI chip path — preferences already applied in apply_ui_choice
     if text.startswith("[choice:"):
@@ -399,6 +485,18 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
             "Fresh start. Still no sales pitch — just the best fit for you. "
             "What’s your max budget? Tap a choice or type a number."
         )
+
+    # Group inventory paste (CSV / comma-delimited lot update)
+    if _looks_like_inventory_paste(user_message):
+        from inventory_ingest import apply_paste_inventory
+
+        result = apply_paste_inventory(
+            _group_id(state),
+            user_message,
+            default_location=_location_id(state),
+            replace_location=_location_id(state),
+        )
+        return _format_ingest_reply(result)
 
     # EV vs gas advice + ROI (can interrupt the quest flow)
     miles_match = re.search(r"(\d[\d,]*)\s*(?:miles|/yr|per year|a year)", text)
@@ -442,16 +540,18 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
 
     if wants_roi or (wants_tradeoffs and "roi" in text):
         incentive = DEFAULT_ASSUMPTIONS["federal_ev_credit"] if "credit" in text or "incentive" in text else 0.0
-        # Prefer catalog pair when available
-        ev_car = get_car("tesla-model3-2021")
-        gas_car = get_car("toyota-camry-2022")
-        # Allow user to hint bolt
+        ev_car, gas_car = _pick_ev_gas_pair(state)
         if "bolt" in text:
-            ev_car = get_car("chevrolet-bolt-2022")
+            ev_car = _find_car(state, "chevrolet-bolt-2022") or ev_car
         if "civic" in text:
-            gas_car = get_car("honda-civic-2023")
+            gas_car = _find_car(state, "honda-civic-2023") or gas_car
         if "corolla" in text:
-            gas_car = get_car("toyota-corolla-2023")
+            gas_car = _find_car(state, "toyota-corolla-2023") or gas_car
+        if not ev_car or not gas_car:
+            return (
+                "I need both an EV/hybrid and a gas car on this lot to run break-even. "
+                "Upload or paste this week’s inventory, or ask about tradeoffs instead."
+            )
         result = roi_from_cars(
             ev_car,
             gas_car,
@@ -599,8 +699,19 @@ def _run_demo_turn(state: dict[str, Any], user_message: str) -> str:
     return stage_meta["prompt"]
 
 
-def chat(message: str, session_id: str | None = None) -> dict[str, Any]:
-    sid, state = _session(session_id)
+def chat(
+    message: str,
+    session_id: str | None = None,
+    group_id: str | None = None,
+    location_id: str | None = None,
+    *,
+    dealer_id: str | None = None,
+) -> dict[str, Any]:
+    sid, state = _session(
+        session_id,
+        group_id=group_id or dealer_id,
+        location_id=location_id,
+    )
     state["messages"].append({"role": "user", "content": message})
 
     if _openai_ready():
@@ -612,15 +723,17 @@ def chat(message: str, session_id: str | None = None) -> dict[str, Any]:
 
     state["messages"].append({"role": "assistant", "content": reply})
     prefs = _prefs(state)
-    contenders = state.get("last_contenders") or rank_cars(list_cars(), prefs, limit=4)
-    # Refresh contenders when prefs allow
+    group = public_group_config(_group_id(state), _location_id(state))
+    contenders = state.get("last_contenders") or rank_cars(_cars(state), prefs, limit=4)
     if prefs.budget and prefs.stage in ("compare", "decide", "condition"):
-        contenders = rank_cars(list_cars(), prefs, limit=4)
+        contenders = rank_cars(_cars(state), prefs, limit=4)
         state["last_contenders"] = contenders
 
     stage_payload = next_stage_payload(prefs, contenders)
     return {
         "session_id": sid,
+        "group": group,
+        "dealer": group,  # alias
         "reply": reply,
         "mode": mode,
         "langchain_available": LANGCHAIN_AVAILABLE,
@@ -631,34 +744,73 @@ def chat(message: str, session_id: str | None = None) -> dict[str, Any]:
         "hex_axes": list(contenders[0]["hex_labels"]) if contenders else list(STAGE_PROMPTS),
         "roi": state.get("last_roi"),
         "ev_assumptions": DEFAULT_ASSUMPTIONS,
+        "inventory_count": len(_cars(state)),
+        "location_id": _location_id(state),
     }
 
 
-def apply_ui_choice(session_id: str | None, stage: str, value: Any) -> dict[str, Any]:
-    sid, state = _session(session_id)
+def apply_ui_choice(
+    session_id: str | None,
+    stage: str,
+    value: Any,
+    group_id: str | None = None,
+    location_id: str | None = None,
+    *,
+    dealer_id: str | None = None,
+) -> dict[str, Any]:
+    sid, state = _session(
+        session_id,
+        group_id=group_id or dealer_id,
+        location_id=location_id,
+    )
     prefs = _prefs(state)
     if stage == "compare" and str(value) == "done":
         prefs.stage = "decide"
         _save_prefs(state, prefs)
-        return chat("What's the best pick?", sid)
+        return chat(
+            "What's the best pick?",
+            sid,
+            group_id=_group_id(state),
+            location_id=_location_id(state),
+        )
     prefs = apply_choice(prefs, stage, value)
     _save_prefs(state, prefs)
 
-    # Narrate the choice as a user message for continuity
     label = str(value)
-    return chat(f"[choice:{stage}={label}]", sid)
+    return chat(
+        f"[choice:{stage}={label}]",
+        sid,
+        group_id=_group_id(state),
+        location_id=_location_id(state),
+    )
 
 
-def new_session() -> dict[str, Any]:
-    sid, state = _session(None)
+def new_session(
+    group_id: str | None = None,
+    location_id: str | None = None,
+    *,
+    dealer_id: str | None = None,
+) -> dict[str, Any]:
+    gid = resolve_group(group_id=group_id or dealer_id)
+    sid, state = _session(None, group_id=gid, location_id=location_id)
     prefs = PreferenceState()
     stage = next_stage_payload(prefs)
+    group = public_group_config(gid, location_id)
+    count = len(_cars(state))
+    scope = (
+        f"at {group['name']}"
+        if location_id
+        else f"across the {group.get('group_name') or group['name']} group"
+    )
     return {
         "session_id": sid,
+        "group": group,
+        "dealer": group,
         "reply": (
-            "Welcome — I’m your DriveQuest advisor. Think of me as a car salesperson "
-            "who isn’t paid to close: I only care about the best car for *you* "
-            "(budget, reliability, value, lifestyle). "
+            f"Welcome to {group['name']} — I’m your DriveQuest advisor. "
+            "Think of me as a salesperson who isn’t paid to close: I only care about "
+            f"the best car for *you* {scope} "
+            f"({count} vehicles loaded). "
             "Start with your budget below, or ask anytime whether an EV is worth it."
         ),
         "mode": "langchain" if _openai_ready() else "demo",
@@ -669,4 +821,43 @@ def new_session() -> dict[str, Any]:
         "contenders": [],
         "roi": None,
         "ev_assumptions": DEFAULT_ASSUMPTIONS,
+        "inventory_count": count,
+        "location_id": location_id,
     }
+
+
+def _looks_like_inventory_paste(message: str) -> bool:
+    lower = message.lower()
+    if "stock" in lower and ("make" in lower or "year" in lower) and ("," in message or "\t" in message):
+        return True
+    lines = [ln for ln in message.strip().splitlines() if ln.strip()]
+    if len(lines) >= 2 and ("," in lines[0] or "\t" in lines[0]):
+        header = lines[0].lower()
+        return any(k in header for k in ("stock", "vin", "make", "model", "price", "year"))
+    return False
+
+
+def _format_ingest_reply(result: dict[str, Any]) -> str:
+    ok = result.get("accepted", 0)
+    bad = result.get("errors") or []
+    period = result.get("period_label") or "current period"
+    loc = result.get("location_id")
+    scope = f" (location `{loc}`)" if loc else " (group-wide)"
+    lines = [
+        f"Updated inventory for **{period}**{scope}: **{ok}** vehicle(s) loaded.",
+    ]
+    if result.get("sample"):
+        lines.append("Sample rows I understood:")
+        for row in result["sample"][:3]:
+            loc_tag = f" · {row['location_id']}" if row.get("location_id") else ""
+            lines.append(
+                f"- {row.get('year')} {row.get('make')} {row.get('model')} · ${row.get('price'):,}{loc_tag}"
+            )
+    if bad:
+        lines.append(f"Flagged **{len(bad)}** bad row(s):")
+        for err in bad[:5]:
+            lines.append(f"- Row {err.get('row')}: {err.get('message')}")
+        if len(bad) > 5:
+            lines.append(f"- …and {len(bad) - 5} more")
+    lines.append("Recommendations, quest, chat, and ROI now use this latest loaded inventory.")
+    return "\n".join(lines)

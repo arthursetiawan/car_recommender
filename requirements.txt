@@ -15,3 +15,5 @@ langchain-core
 langchain-openai
 openai
 pydantic
+openpyxl
+python-multipart
