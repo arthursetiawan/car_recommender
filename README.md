@@ -11,6 +11,12 @@ LangChain-powered car advisor that turns shopping into a progressive quest. You 
 
 Built on the existing FastAPI + SQLAlchemy + scraper codebase; the scrapers and legacy `/recommendations/` endpoint remain.
 
+## Documentation (POC)
+
+Full proof-of-concept docs — overview, architecture, shopper UX, dealer admin/ingest, embed install, runbook, and limitations — live in **[`docs/`](./docs/README.md)**. Start with [`docs/poc-overview.md`](./docs/poc-overview.md).
+
+Dealer group embeds use `?group=` (optional `&location=`). Sample tenants: `northstar-motors`, `lakeside-ev`.
+
 ## Quick start
 
 ```bash
