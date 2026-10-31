@@ -1,19 +1,19 @@
 # Arthur Setiawan
 
-**Data scientist** in Seattle, focused on automotive and industrial systems — production ML, data platforms, and dependable delivery.
+**Data scientist** in Seattle focused on automotive and industrial systems. I own the full DS lifecycle — modeling through production deployment, monitoring, and ongoing maintenance.
 
 [Portfolio](https://arthursetiawan.github.io/) · [DriveQuest](https://github.com/arthursetiawan/car_recommender) · [LinkedIn](https://www.linkedin.com/in/arthursetiawan/) · [Email](mailto:rthrsetiawan@gmail.com)
 
 ## Currently
 
-Data Scientist at **PACCAR Parts**, working on pricing, stocking, ETA modeling, and dealer analytics. Building **[DriveQuest](https://github.com/arthursetiawan/car_recommender)** — a LangChain conversational car advisor with hex scoring, EV tradeoffs, and dealer embeds.
+Data Scientist at **PACCAR Parts**, owning pricing, stocking, ETA, and dealer analytics systems in production. Building **[DriveQuest](https://github.com/arthursetiawan/car_recommender)** — a LangChain conversational car advisor with hex scoring, EV tradeoffs, and dealer embeds.
 
 ## Focus areas
 
-- **Data science** — elasticity pricing, forecasting, ETA and stocking models
-- **MLOps** — review → UAT → production paths, model-backed APIs
-- **Data engineering** — Azure pipelines, dbt / Snowflake / Spark fluency
-- **Delivery** — CI/CD, Docker, automation that reduces operational toil
+- **Full DS lifecycle** — problem framing → model → validate → deploy → maintain
+- **Production deployment** — CI/CD, UAT, model-backed APIs, Dockerized services
+- **Data platforms** — Azure pipelines, dbt / Snowflake / Spark fluency
+- **Post-deploy ownership** — keep live systems healthy as data and needs change
 
 ## Stack
 
