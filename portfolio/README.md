@@ -1,17 +1,29 @@
-# Arthur Setiawan — personal portfolio
+# Arthur Setiawan — recruiter portfolio
 
-Static site positioned for recruiters hiring **Data Scientist**, **MLOps**, **Data Engineer**, and **DevOps** talent — with an automotive full-stack focus.
+Full-stack **automotive data scientist** site aimed at recruiters hiring for:
 
-## Local preview
+- Data Scientist
+- MLOps
+- Data Engineer
+- DevOps
+
+## Preview
 
 ```bash
 cd portfolio
 python -m http.server 8080 --bind 127.0.0.1
 ```
 
-Open [http://127.0.0.1:8080](http://127.0.0.1:8080).
+## Publish to https://arthursetiawan.github.io/
 
-## Publish
+Requires write access to `arthursetiawan/arthursetiawan.github.io`:
 
-1. **This repo (project Pages)** — `.github/workflows/pages.yml` publishes `portfolio/` to `https://arthursetiawan.github.io/car_recommender/` once GitHub Pages is enabled for the repository.
-2. **Username site** — copy everything inside `portfolio/` into the root of [`arthursetiawan.github.io`](https://github.com/arthursetiawan/arthursetiawan.github.io). Paths are relative, so no path rewrites are required.
+```bash
+./publish-to-github-io.sh
+```
+
+Or copy everything in this folder (except `publish-to-github-io.sh`) into that repo’s root and push `main`.
+
+## Alternate: project Pages on car_recommender
+
+The workflow at `.github/workflows/pages.yml` deploys this folder after Pages is enabled on the repo.

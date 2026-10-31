@@ -3,7 +3,7 @@
   if (year) year.textContent = String(new Date().getFullYear());
 
   const revealTargets = document.querySelectorAll(
-    ".section-head, .feature, .rail-item, .role-rail li, .impact-strip, .stack-grid > div, .timeline li, .contact-row"
+    ".section-head, .role-map article, .impact-strip, .feature, .rail-item, .stack-grid > div, .timeline li, .contact-row, .langs"
   );
   revealTargets.forEach((el) => el.classList.add("reveal"));
 
@@ -20,7 +20,7 @@
         observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
+    { threshold: 0.14, rootMargin: "0px 0px -6% 0px" }
   );
 
   revealTargets.forEach((el) => observer.observe(el));
