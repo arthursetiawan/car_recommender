@@ -1,26 +1,22 @@
 # Arthur Setiawan
 
-### Full-stack automotive data scientist · Seattle
+**Data scientist** in Seattle, focused on automotive and industrial systems — production ML, data platforms, and dependable delivery.
 
-I ship **models → pipelines → APIs → dashboards** for the automotive value chain — pricing, stocking, dealer analytics, and productized AI.
+[Portfolio](https://arthursetiawan.github.io/) · [DriveQuest](https://github.com/arthursetiawan/car_recommender) · [LinkedIn](https://www.linkedin.com/in/arthursetiawan/) · [Email](mailto:rthrsetiawan@gmail.com)
 
-🌐 [Portfolio](https://arthursetiawan.github.io/) · [DriveQuest](https://github.com/arthursetiawan/car_recommender) · [LinkedIn](https://www.linkedin.com/in/arthursetiawan/) · [Email](mailto:rthrsetiawan@gmail.com)
+## Currently
 
-## Hire me into these lanes
+Data Scientist at **PACCAR Parts**, working on pricing, stocking, ETA modeling, and dealer analytics. Building **[DriveQuest](https://github.com/arthursetiawan/car_recommender)** — a LangChain conversational car advisor with hex scoring, EV tradeoffs, and dealer embeds.
 
-| Role | Proof |
-|------|-------|
-| **Data Scientist** | Elasticity pricing (~$600M parts scope), warehouse ETAs (−91% error), stocking for ~6k orders/day |
-| **MLOps** | Peer review → UAT → production; Salesforce-integrated model APIs; Dockerized DriveQuest |
-| **Data Engineer** | Azure scrape → warehouse → NER → Power BI; dbt / Snowflake / Spark fluency |
-| **DevOps** | CI/CD on production ML, RPA reclaiming ~5 FTE capacity, Terraform / Docker / Actions |
+## Focus areas
 
-## Now
-
-**Data Scientist @ PACCAR Parts** — after Top Intern → GM offer. Building **[DriveQuest](https://github.com/arthursetiawan/car_recommender)**: LangChain car advisor with hex radar scoring, EV ROI, and dealer-group embeds.
+- **Data science** — elasticity pricing, forecasting, ETA and stocking models
+- **MLOps** — review → UAT → production paths, model-backed APIs
+- **Data engineering** — Azure pipelines, dbt / Snowflake / Spark fluency
+- **Delivery** — CI/CD, Docker, automation that reduces operational toil
 
 ## Stack
 
-`Python` `SQL` `scikit-learn` `LangChain` `FastAPI` `Docker` `CI/CD` `dbt` `Snowflake` `Spark` `Azure` `AWS` `Terraform` `Salesforce` `Power BI`
+`Python` `SQL` `scikit-learn` `LangChain` `FastAPI` `Docker` `CI/CD` `dbt` `Snowflake` `Spark` `Azure` `AWS` `Salesforce` `Power BI`
 
-MS Data Science (Seattle U, 3.94) · BA Math (UW) · EN / ID native · ZH conversational
+MS Data Science, Seattle University · BA Mathematics, University of Washington

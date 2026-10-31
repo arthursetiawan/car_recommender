@@ -1,11 +1,7 @@
-# Arthur Setiawan — recruiter portfolio
+# Arthur Setiawan — personal portfolio
 
-Full-stack **automotive data scientist** site aimed at recruiters hiring for:
-
-- Data Scientist
-- MLOps
-- Data Engineer
-- DevOps
+Professional site for Arthur Setiawan — automotive-focused data scientist with
+production ML, data platform, and delivery experience.
 
 ## Preview
 
