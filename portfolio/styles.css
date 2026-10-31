@@ -333,6 +333,29 @@ main,
   padding-top: 0.5rem;
 }
 
+.impact-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+  margin: 2.25rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.impact-strip dt {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--teal-deep);
+}
+
+.impact-strip dd {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
 .rail-item h3 {
   font-size: 1.25rem;
 }
@@ -452,12 +475,14 @@ main,
   .project-rail,
   .role-rail,
   .stack-grid,
+  .impact-strip,
   .timeline li {
     grid-template-columns: 1fr;
   }
 
   .role-rail,
-  .stack-grid {
+  .stack-grid,
+  .impact-strip {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -492,7 +517,8 @@ main,
 
 @media (max-width: 560px) {
   .role-rail,
-  .stack-grid {
+  .stack-grid,
+  .impact-strip {
     grid-template-columns: 1fr;
   }
 }
