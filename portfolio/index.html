@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arthur Setiawan — Full-Stack Automotive Data Scientist</title>
+    <meta
+      name="description"
+      content="Arthur Setiawan is a Seattle full-stack automotive data scientist spanning ML, MLOps, data engineering, and DevOps — pricing, stocking, dealer analytics, and DriveQuest."
+    />
+    <meta property="og:title" content="Arthur Setiawan — Full-Stack Automotive Data Scientist" />
+    <meta
+      property="og:description"
+      content="Production ML · MLOps · data engineering · DevOps for automotive and parts. Open to Data Scientist, MLOps, Data Engineer, and DevOps roles."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="wordmark" href="#top">Arthur Setiawan</a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#work">Work</a>
+        <a href="#stack">Stack</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+        <a class="nav-resume" href="resume/2026_Arthur_Setiawan_Resume.pdf">Resume</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="Introduction">
+        <div class="hero-copy">
+          <p class="brand">Arthur Setiawan</p>
+          <h1>Full-stack automotive data scientist.</h1>
+          <p class="lede">
+            I connect ML, data platforms, and shipping discipline — pricing APIs,
+            stocking systems, dealer analytics, CI/CD, and productized AI for the
+            automotive value chain.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#work">View proof of work</a>
+            <a class="btn btn-ghost" href="mailto:rthrsetiawan@gmail.com">Email me</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img
+            src="assets/arthur.jpg"
+            alt="Portrait of Arthur Setiawan"
+            width="1282"
+            height="1308"
+            fetchpriority="high"
+          />
+          <div class="hero-caption" aria-hidden="true">
+            <span>Seattle, WA · PACCAR Parts</span>
+            <span>MS Data Science · Seattle University</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section roles-section" aria-label="Roles">
+        <div class="section-head">
+          <h2>Built for these hiring lanes</h2>
+          <p>
+            One profile that reads cleanly for Data Science, MLOps, Data Engineering,
+            and DevOps recruiters screening automotive or industrial tech teams.
+          </p>
+        </div>
+        <ul class="role-rail">
+          <li>
+            <h3>Data Scientist</h3>
+            <p>Elasticity pricing, forecasting, ETA models, experimentation mindset.</p>
+          </li>
+          <li>
+            <h3>MLOps</h3>
+            <p>Peer review, UAT, production deploys, monitored model-backed APIs.</p>
+          </li>
+          <li>
+            <h3>Data Engineer</h3>
+            <p>Azure pipelines, scraping → warehouse flows, dbt/Snowflake fluency.</p>
+          </li>
+          <li>
+            <h3>DevOps</h3>
+            <p>CI/CD habits, Dockerized services, automation that removes manual toil.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section id="work" class="section work-section">
+        <div class="section-head">
+          <h2>Selected work</h2>
+          <p>Production impact at scale, plus an open-source automotive AI build.</p>
+        </div>
+
+        <article class="feature">
+          <div class="feature-media">
+            <img
+              src="assets/drivequest-radar.svg"
+              alt="DriveQuest hexagonal radar comparing car scores"
+              width="640"
+              height="420"
+            />
+            <img
+              class="feature-inset"
+              src="assets/drivequest-car.jpg"
+              alt="Sample inventory vehicle used by DriveQuest"
+              width="800"
+              height="500"
+            />
+          </div>
+          <div class="feature-copy">
+            <p class="eyebrow">Open source · FastAPI · LangChain · Docker</p>
+            <h3>DriveQuest</h3>
+            <p>
+              End-to-end conversational car advisor: quest-style intake, hexagonal
+              multi-axis scoring, EV tradeoffs, ROI break-even, scrapers, and a
+              multi-tenant dealer-group embed with inventory ingest.
+            </p>
+            <ul class="plain-list">
+              <li>Full stack: FastAPI backend, modern static UI, agent layer, catalog data</li>
+              <li>Ops-ready: Docker image, demo mode without an API key, POC runbook</li>
+              <li>Dealer plugin: group/location scope, CSV/Excel ingest, embed snippet</li>
+            </ul>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="https://github.com/arthursetiawan/car_recommender"
+                >GitHub repository</a
+              >
+              <a
+                class="btn btn-ghost"
+                href="https://github.com/arthursetiawan/car_recommender/tree/main/docs"
+                >Architecture &amp; runbook</a
+              >
+            </div>
+          </div>
+        </article>
+
+        <div class="project-rail">
+          <article class="rail-item">
+            <h3>Pricing &amp; stocking · PACCAR Parts</h3>
+            <p>
+              Log-log elasticity model tied into Salesforce APIs for discount guidance
+              across a large parts revenue portfolio. Predictive stocking suggestions
+              across ~6,000 supplier orders/day with CI/CD, peer review, and UAT.
+            </p>
+            <p class="meta">Python · APIs · Salesforce · CI/CD · production ML</p>
+          </article>
+          <article class="rail-item">
+            <h3>InsightsHub &amp; dealer analytics</h3>
+            <p>
+              Geospatial truck-fault signals for conquesting and parts leads; Salesforce
+              dashboards for ~700 dealers covering sales, incentives, and SRM KPIs.
+              Warehouse lead-time error cut 91% for 97% of US shipments.
+            </p>
+            <p class="meta">Geospatial · RandomForest · Power BI / Salesforce</p>
+          </article>
+          <article class="rail-item">
+            <h3>Federal market intel · CDW-G</h3>
+            <p>
+              Azure-hosted scrape → clean → warehouse flow with NER into Power BI,
+              saving ~4 hours of research daily per sales teammate for accounts like
+              U.S. Space Force and U.S. Army.
+            </p>
+            <p class="meta">Azure · web scraping · NLP · Power BI</p>
+          </article>
+          <article class="rail-item">
+            <h3>Permitting automation · MasTec</h3>
+            <p>
+              Led DevOps-flavored automation for Primavera P6 data entry with Automation
+              Anywhere — reclaiming capacity equivalent to five FTEs — plus ArcGIS-backed
+              client dashboards as the live source of truth.
+            </p>
+            <p class="meta">RPA · Power BI · ArcGIS · data governance</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="stack" class="section stack-section">
+        <div class="section-head">
+          <h2>Stack across the full path</h2>
+          <p>From notebook to warehouse to API to dashboard — with automotive domain depth.</p>
+        </div>
+        <div class="stack-grid">
+          <div>
+            <h3>Languages &amp; analytics</h3>
+            <p>Python, SQL, R, DAX, Power Query M, Java</p>
+          </div>
+          <div>
+            <h3>ML / AI</h3>
+            <p>scikit-learn, TensorFlow/Keras, Hugging Face, NLP, forecasting, LangChain</p>
+          </div>
+          <div>
+            <h3>Data platforms</h3>
+            <p>Snowflake, dbt, Spark, Hadoop, pandas, Postgres, Supabase</p>
+          </div>
+          <div>
+            <h3>MLOps &amp; DevOps</h3>
+            <p>Git, CI/CD, Docker, Terraform, Azure, AWS, FastAPI, uvicorn</p>
+          </div>
+          <div>
+            <h3>Activation</h3>
+            <p>Salesforce, Power BI, Tableau, Looker, REST APIs</p>
+          </div>
+          <div>
+            <h3>Domain</h3>
+            <p>Automotive &amp; heavy-duty parts, dealer networks, pricing, logistics</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" class="section experience-section">
+        <div class="section-head">
+          <h2>Experience</h2>
+          <p>MS Data Science (3.94 GPA) · BA Mathematics (University of Washington).</p>
+        </div>
+        <ol class="timeline">
+          <li>
+            <div class="when">Aug 2024 — Present</div>
+            <div>
+              <h3>Data Scientist · PACCAR Parts</h3>
+              <p>
+                Full-time after ranking Top Intern (Summer 2023) and earning a direct
+                offer from the division GM. Owns production pricing, stocking, ETA, and
+                dealer-facing analytics work with Salesforce integration.
+              </p>
+            </div>
+          </li>
+          <li>
+            <div class="when">Jan — Jun 2024</div>
+            <div>
+              <h3>Data Science Intern · CDW-G</h3>
+              <p>
+                Cloud market-research automation for federal sales — scraping, NER, and
+                Power BI packaged as a durable research system.
+              </p>
+            </div>
+          </li>
+          <li>
+            <div class="when">Dec 2019 — Sep 2022</div>
+            <div>
+              <h3>Data Analyst · MasTec</h3>
+              <p>
+                Construction permitting analytics and automation: RPA into Primavera P6,
+                governed trackers, and geospatial client reporting.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section id="contact" class="section contact-section">
+        <div class="section-head">
+          <h2>Recruiter-ready next step</h2>
+          <p>
+            Want a full-stack automotive data scientist who can model, pipeline, deploy,
+            and explain? Let’s talk.
+          </p>
+        </div>
+        <div class="contact-row">
+          <a href="mailto:rthrsetiawan@gmail.com">rthrsetiawan@gmail.com</a>
+          <a href="https://www.linkedin.com/in/arthursetiawan/" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/arthursetiawan" rel="noopener">GitHub</a>
+          <a href="resume/2026_Arthur_Setiawan_Resume.pdf">Resume PDF</a>
+          <a href="resume/index.html">Resume viewer</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="year">2026</span> Arthur Setiawan · Full-stack automotive data scientist</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,15 +1,22 @@
 # DriveQuest — Conversational Car Recommender
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-0f6e63.svg)](./LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](./requirements.txt)
+[![FastAPI](https://img.shields.io/badge/FastAPI-uvicorn-009688)](./backend/app.py)
+[![Docs](https://img.shields.io/badge/docs-POC%20suite-c47a22)](./docs/README.md)
+
 LangChain-powered car advisor that turns shopping into a progressive quest. You chat (or tap choice chips) to narrow budget, body type, priorities, and new/used — then compare contenders on a **hexagonal radar** across six axes:
 
-1. **Value** — deal quality vs market
-2. **Budget fit** — how well price sits under your max
-3. **Reliability**
-4. **Efficiency** — fuel / energy
-5. **Safety**
-6. **Practicality** — space, body style, wear
+1. **Value** — deal quality vs market  
+2. **Budget fit** — how well price sits under your max  
+3. **Reliability**  
+4. **Efficiency** — fuel / energy  
+5. **Safety**  
+6. **Practicality** — space, body style, wear  
 
-Built on the existing FastAPI + SQLAlchemy + scraper codebase; the scrapers and legacy `/recommendations/` endpoint remain.
+Built on FastAPI + SQLAlchemy + scrapers. Dealer groups can embed a location-scoped advisor; the legacy `/recommendations/` endpoint remains.
+
+> **Personal site** (recruiter-facing full-stack automotive data scientist portfolio) lives in [`portfolio/`](./portfolio/). After merge: enable GitHub Pages via the included workflow, **or** copy `portfolio/` contents into [`arthursetiawan.github.io`](https://github.com/arthursetiawan/arthursetiawan.github.io). Optional profile README draft: [`PROFILE_README.md`](./PROFILE_README.md).
 
 ## Documentation (POC)
 
@@ -66,10 +73,14 @@ backend/
   agent.py                 # LangChain agent + demo fallback
   recommendation_engine.py # Hex scoring + game stages
   catalog.py               # Curated inventory loader
+  dealers.py               # Multi-tenant dealer groups
+  inventory_ingest.py      # CSV/Excel ingest
   models.py                # SQLAlchemy Car model
   scraper*/                # Existing site scrapers
 frontend/                  # DriveQuest chat + radar UI
-data/car_catalog.json      # Seed inventory (includes scraped-inspired rows)
+portfolio/                 # Personal portfolio (GitHub Pages)
+data/car_catalog.json      # Seed inventory
+docs/                      # POC documentation suite
 ```
 
 ## Scrapers
@@ -82,3 +93,7 @@ Existing Cars.com / CarGurus / Autotrader scrapers are unchanged. Catalog rows c
 docker build -t drivequest .
 docker run -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY drivequest
 ```
+
+## License
+
+MIT — see [`LICENSE`](./LICENSE).
