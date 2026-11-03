@@ -15,6 +15,7 @@ Proof-of-concept docs for **DriveQuest** — an honest, embeddable car advisor s
 | [embed-install.md](./embed-install.md) | Widget snippet, group/location params, samples |
 | [runbook.md](./runbook.md) | Run locally, env vars, demo mode, test tips |
 | [poc-limitations.md](./poc-limitations.md) | Honest gaps vs production |
+| [github-pages.md](./github-pages.md) | GitHub.io / Pages URLs and static demo |
 
 ## 30-second pitch
 

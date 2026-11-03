@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DriveQuest — POC on GitHub Pages</title>
+    <meta
+      name="description"
+      content="DriveQuest proof of concept: honest conversational car advisor with hex scoring, EV ROI, and dealer-group embeds. Static demo + docs on GitHub Pages."
+    />
+    <meta name="theme-color" content="#121c26" />
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="./">DriveQuest</a>
+      <nav>
+        <a href="demo.html">Static demo</a>
+        <a href="docs/">Docs</a>
+        <a href="https://github.com/arthursetiawan/car_recommender">Repo</a>
+        <a href="../">Portfolio</a>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <p class="eyebrow">Proof of concept · GitHub Pages</p>
+      <h1>Honest car advice scoped to a dealer’s lot.</h1>
+      <p class="lede">
+        DriveQuest is a conversational advisor with quest-style intake, a hexagonal
+        comparison radar, EV vs gas break-even, and multi-tenant
+        <strong>dealer group</strong> embeds (optional rooftop
+        <strong>location</strong>). This Pages site is a static slice — the full
+        FastAPI + LangChain app runs locally from the repo.
+      </p>
+      <div class="cta-row">
+        <a class="btn primary" href="demo.html">Try static shopper demo</a>
+        <a class="btn ghost" href="docs/">Read POC docs</a>
+        <a class="btn ghost" href="https://github.com/arthursetiawan/car_recommender">View on GitHub</a>
+      </div>
+
+      <section class="grid3">
+        <article>
+          <h2>Shopper quest</h2>
+          <p>Budget → body → priorities → new/used → hex compare → best match. Commission-free persona.</p>
+        </article>
+        <article>
+          <h2>Dealer groups</h2>
+          <p>Shared inventory + branding; optional location filter for a single storefront embed.</p>
+        </article>
+        <article>
+          <h2>Lot ingest</h2>
+          <p>Excel/CSV upload or comma-delimited paste; bad rows flagged. Live JSON drives recommendations.</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Run the full app (not on Pages)</h2>
+        <p>GitHub Pages is static — no long-lived FastAPI here. Locally:</p>
+        <pre><code>git clone https://github.com/arthursetiawan/car_recommender.git
+cd car_recommender
+pip install -r requirements.txt
+uvicorn backend.app:app --port 8000
+# open http://localhost:8000/  ·  /embed/northstar-motors</code></pre>
+        <p class="note">
+          Demo advisor works without <code>OPENAI_API_KEY</code>. Sample groups:
+          <code>northstar-motors</code> (downtown / westside),
+          <code>lakeside-ev</code> (harbor / lakefront).
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>What’s on this static site</h2>
+        <ul>
+          <li><a href="demo.html">Static demo</a> — chip quest + hex radar over sample Northstar / Lakeside inventory (client-side only).</li>
+          <li><a href="docs/">POC docs</a> — overview, architecture, embed, ingest, runbook, limitations.</li>
+          <li>Links back to the <a href="https://github.com/arthursetiawan/car_recommender">source repo</a> for the live plugin.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        <a href="https://arthursetiawan.github.io/">arthursetiawan.github.io</a>
+        · DriveQuest POC
+        · <a href="https://github.com/arthursetiawan/car_recommender">car_recommender</a>
+      </p>
+    </footer>
+  </body>
+</html>

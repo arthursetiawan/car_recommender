@@ -32,9 +32,10 @@ cd "${TARGET_DIR}"
 git checkout -B "${BRANCH}"
 git add -A
 git status --short
-git commit -m "Refresh portfolio: full-stack automotive data scientist" || {
+git commit -m "Refresh portfolio + DriveQuest POC Pages presence" || {
   echo "Nothing to commit."
   exit 0
 }
 git push origin "${BRANCH}"
 echo "Published. Live at https://arthursetiawan.github.io/"
+echo "DriveQuest POC: https://arthursetiawan.github.io/drivequest/"
