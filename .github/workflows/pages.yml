@@ -29,10 +29,7 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Enable Pages (Actions source) if the repo has not been configured yet
-          enablement: true
-
+        # Pages site already enabled (GitHub Actions source); do not call create.
       - name: Upload portfolio artifact
         uses: actions/upload-pages-artifact@v3
         with:
