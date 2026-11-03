@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DriveQuest — POC on GitHub Pages</title>
+    <title>DriveQuest — hosted demo</title>
     <meta
       name="description"
-      content="DriveQuest proof of concept: honest conversational car advisor with hex scoring, EV ROI, and dealer-group embeds. Static demo + docs on GitHub Pages."
+      content="DriveQuest hosted demo: honest conversational car advisor with hex scoring, EV ROI, and dealer-group inventory. Try the shopper quest on GitHub Pages."
     />
     <meta name="theme-color" content="#121c26" />
     <link rel="icon" href="../favicon.ico" />
@@ -23,29 +23,38 @@
     <header class="top">
       <a class="brand" href="./">DriveQuest</a>
       <nav>
-        <a href="demo.html">Static demo</a>
+        <a href="demo.html">Try demo</a>
         <a href="docs/">Docs</a>
-        <a href="https://github.com/arthursetiawan/car_recommender">Repo</a>
-        <a href="../">Portfolio</a>
+        <a href="https://github.com/arthursetiawan/car_recommender">Source</a>
+        <a class="nav-pill" href="demo.html">Browse shopper quest</a>
       </nav>
     </header>
 
-    <main class="wrap">
-      <p class="eyebrow">Proof of concept · GitHub Pages</p>
-      <h1>Honest car advice scoped to a dealer’s lot.</h1>
-      <p class="lede">
-        DriveQuest is a conversational advisor with quest-style intake, a hexagonal
-        comparison radar, EV vs gas break-even, and multi-tenant
-        <strong>dealer group</strong> embeds (optional rooftop
-        <strong>location</strong>). This Pages site is a static slice — the full
-        FastAPI + LangChain app runs locally from the repo.
-      </p>
-      <div class="cta-row">
-        <a class="btn primary" href="demo.html">Try static shopper demo</a>
-        <a class="btn ghost" href="docs/">Read POC docs</a>
-        <a class="btn ghost" href="https://github.com/arthursetiawan/car_recommender">View on GitHub</a>
+    <section class="product-hero" aria-label="DriveQuest">
+      <img
+        class="product-media"
+        src="../assets/drivequest-car.jpg"
+        alt="Sample vehicle from DriveQuest inventory"
+        width="1200"
+        height="750"
+      />
+      <div class="product-scrim" aria-hidden="true"></div>
+      <div class="product-content">
+        <p class="product-brand">Drive<span>Quest</span></p>
+        <h1>Find the right car without the sales pitch</h1>
+        <p class="product-lede">
+          Transparent quest for dealer lots — hex compare, EV break-even, inventory scoped
+          to a dealer group (optional rooftop). Same public-demo shape as Motormarket:
+          open the hosted try-it surface in one click.
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="demo.html">Try shopper demo <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn ghost" href="https://github.com/arthursetiawan/car_recommender">View source</a>
+        </div>
       </div>
+    </section>
 
+    <main class="wrap below-hero">
       <section class="grid3">
         <article>
           <h2>Shopper quest</h2>
@@ -57,40 +66,39 @@
         </article>
         <article>
           <h2>Lot ingest</h2>
-          <p>Excel/CSV upload or comma-delimited paste; bad rows flagged. Live JSON drives recommendations.</p>
+          <p>Excel/CSV or paste in the full app; Pages demo uses sample Northstar / Lakeside lots.</p>
         </article>
       </section>
 
       <section class="panel">
-        <h2>Run the full app (not on Pages)</h2>
-        <p>GitHub Pages is static — no long-lived FastAPI here. Locally:</p>
-        <pre><code>git clone https://github.com/arthursetiawan/car_recommender.git
-cd car_recommender
-pip install -r requirements.txt
-uvicorn backend.app:app --port 8000
-# open http://localhost:8000/  ·  /embed/northstar-motors</code></pre>
-        <p class="note">
-          Demo advisor works without <code>OPENAI_API_KEY</code>. Sample groups:
-          <code>northstar-motors</code> (downtown / westside),
-          <code>lakeside-ev</code> (harbor / lakefront).
+        <h2>Try it here (static)</h2>
+        <p>
+          GitHub Pages can’t run FastAPI. This hosted demo is the client-side slice —
+          chip quest + hex radar over sample inventory.
         </p>
+        <div class="cta-row" style="margin-top: 0.85rem">
+          <a class="btn primary" href="demo.html">Launch shopper quest</a>
+          <a class="btn ghost" href="docs/" style="color:#13202c;border-color:#ccc;background:#fff">POC docs</a>
+        </div>
       </section>
 
       <section class="panel">
-        <h2>What’s on this static site</h2>
-        <ul>
-          <li><a href="demo.html">Static demo</a> — chip quest + hex radar over sample Northstar / Lakeside inventory (client-side only).</li>
-          <li><a href="docs/">POC docs</a> — overview, architecture, embed, ingest, runbook, limitations.</li>
-          <li>Links back to the <a href="https://github.com/arthursetiawan/car_recommender">source repo</a> for the live plugin.</li>
-        </ul>
+        <h2>Run the full plugin locally</h2>
+        <pre><code>git clone https://github.com/arthursetiawan/car_recommender.git
+cd car_recommender && pip install -r requirements.txt
+uvicorn backend.app:app --port 8000
+# /embed/northstar-motors  ·  /embed/northstar-motors/downtown</code></pre>
+        <p class="note">Demo advisor works without an OpenAI key.</p>
       </section>
     </main>
 
     <footer class="foot">
       <p>
-        <a href="https://arthursetiawan.github.io/">arthursetiawan.github.io</a>
-        · DriveQuest POC
-        · <a href="https://github.com/arthursetiawan/car_recommender">car_recommender</a>
+        <a href="../">Portfolio</a>
+        · comparable entry to
+        <a href="https://arthursetiawan.github.io/motormarket/">Motormarket</a>
+        ·
+        <a href="https://github.com/arthursetiawan/car_recommender">car_recommender</a>
       </p>
     </footer>
   </body>

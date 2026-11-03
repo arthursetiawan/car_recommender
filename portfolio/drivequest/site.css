@@ -84,11 +84,100 @@ body {
   color: #fff;
 }
 
+.top nav .nav-pill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 800;
+}
+
+.product-hero {
+  position: relative;
+  z-index: 1;
+  min-height: min(72vh, 560px);
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+}
+
+.product-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+.product-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(12, 20, 28, 0.35) 0%,
+    rgba(12, 20, 28, 0.55) 40%,
+    rgba(12, 20, 28, 0.92) 100%
+  );
+}
+
+.product-content {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 5.5rem 1.25rem 2.25rem;
+  color: #f4f7fa;
+}
+
+.product-brand {
+  margin: 0 0 0.4rem;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffd7bf;
+}
+
+.product-brand span {
+  color: #7fd4c8;
+}
+
+.product-content h1 {
+  font-family: var(--display);
+  font-size: clamp(2.1rem, 5vw, 3.2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin: 0 0 0.75rem;
+  max-width: 16ch;
+}
+
+.product-lede {
+  margin: 0;
+  max-width: 40rem;
+  color: #d8e2ec;
+  font-size: 1.05rem;
+}
+
+.btn .arrow {
+  margin-left: 0.3rem;
+  transition: transform 0.15s ease;
+}
+
+.btn:hover .arrow {
+  transform: translateX(3px);
+}
+
 .wrap {
   max-width: 920px;
   margin: 0 auto;
   padding: 1rem 1.25rem 3rem;
   color: #f4f7fa;
+}
+
+.wrap.below-hero {
+  padding-top: 1.5rem;
 }
 
 .eyebrow {

@@ -202,6 +202,132 @@ body {
   border-color: rgba(255, 255, 255, 0.28);
 }
 
+.btn .arrow {
+  margin-left: 0.35rem;
+  transition: transform 0.15s ease;
+}
+
+.btn:hover .arrow {
+  transform: translateX(3px);
+}
+
+.nav-cta {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #1a1208 !important;
+  font-weight: 800 !important;
+}
+
+.nav-cta:hover {
+  background: #d4892b;
+  color: #120c05 !important;
+}
+
+/* DriveQuest product band — Motormarket-style hosted-demo entry */
+.dq-band {
+  background: var(--night);
+  color: rgba(244, 248, 251, 0.82);
+  border-top: 1px solid rgba(13, 107, 97, 0.35);
+  border-bottom: 1px solid rgba(196, 122, 34, 0.2);
+}
+
+.dq-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.dq-kicker {
+  margin: 0 0 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7fd4c8;
+}
+
+.dq-title {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  letter-spacing: -0.03em;
+  color: #fff;
+  line-height: 1.05;
+}
+
+.dq-title span {
+  color: var(--amber);
+}
+
+.dq-lede {
+  margin: 0 0 1.1rem;
+  max-width: 42ch;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.dq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.1rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(244, 248, 251, 0.55);
+}
+
+.dq-band .btn-primary {
+  background: var(--teal);
+  color: #f4fffc;
+}
+
+.dq-band .btn-primary:hover {
+  background: var(--teal-deep);
+}
+
+.dq-band .btn-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f8fb;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.dq-visual {
+  position: relative;
+  display: block;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+.dq-visual > img:first-child {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #13202c;
+}
+
+.dq-inset {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  width: 42%;
+  max-width: 220px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
 .section .btn-ghost {
   background: rgba(255, 255, 255, 0.55);
   color: var(--ink);
@@ -554,7 +680,15 @@ body {
     width: min(38%, 170px);
   }
 
-  .topnav a:not(.nav-resume) {
+  .dq-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .dq-inset {
+    width: min(46%, 180px);
+  }
+
+  .topnav a:not(.nav-resume):not(.nav-cta) {
     display: none;
   }
 
