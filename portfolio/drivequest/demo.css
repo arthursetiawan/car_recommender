@@ -1,0 +1,200 @@
+.demo-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.5rem 1.1rem 2.5rem;
+}
+
+.badge {
+  display: inline-block;
+  margin: 0 0 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 215, 191, 0.18);
+  color: #ffd7bf;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.demo-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.demo-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #d8e2ec;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.demo-bar select {
+  min-width: 11rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(248, 250, 251, 0.95);
+  font: inherit;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1rem;
+}
+
+.chat-panel,
+.radar-panel {
+  background: rgba(248, 250, 251, 0.95);
+  color: #101820;
+  border-radius: 18px;
+  padding: 1rem 1.1rem 1.15rem;
+  box-shadow: 0 18px 50px rgba(16, 28, 40, 0.2);
+}
+
+.chat-panel h1,
+.radar-panel h2 {
+  font-family: "Bricolage Grotesque", Georgia, serif;
+  margin: 0 0 0.2rem;
+  font-size: 1.35rem;
+}
+
+.sub {
+  margin: 0 0 0.85rem;
+  color: #4a5d6e;
+  font-size: 0.9rem;
+}
+
+.messages {
+  min-height: 160px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.bubble {
+  max-width: 92%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.bubble.assistant {
+  background: #eef4f7;
+  align-self: flex-start;
+}
+
+.bubble.user {
+  background: rgba(196, 92, 38, 0.14);
+  align-self: flex-end;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.choices button {
+  border: 1px solid rgba(16, 24, 32, 0.14);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.choices button.primary {
+  background: #1a7a6c;
+  color: #fff;
+  border-color: transparent;
+}
+
+.radar-panel canvas {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.legend {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.legend li {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #4a5d6e;
+}
+
+.legend .swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.legend img {
+  width: 36px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.best {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem;
+  border-radius: 12px;
+  background: #eef4f7;
+}
+
+.best.hidden {
+  display: none;
+}
+
+.best img {
+  width: 88px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.best h3 {
+  margin: 0;
+  font-family: "Bricolage Grotesque", Georgia, serif;
+  font-size: 1rem;
+}
+
+.best p {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: #4a5d6e;
+}
+
+@media (max-width: 860px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -22,8 +22,9 @@ Built on FastAPI + SQLAlchemy + scrapers. Dealer groups can embed a location-sco
 
 Full proof-of-concept docs — overview, architecture, shopper UX, dealer admin/ingest, embed install, runbook, and limitations — live in **[`docs/`](./docs/README.md)**. Start with [`docs/poc-overview.md`](./docs/poc-overview.md).
 
-Dealer group embeds use `?group=` (optional `&location=`). Sample tenants: `northstar-motors`, `lakeside-ev`.
+**GitHub Pages (static):** after deploy, https://arthursetiawan.github.io/car_recommender/drivequest/ — hub, shopper demo, HTML docs. See [`docs/github-pages.md`](./docs/github-pages.md). Full FastAPI plugin still runs locally (Pages cannot host the API).
 
+Dealer group embeds use `?group=` (optional `&location=`). Sample tenants: `northstar-motors`, `lakeside-ev`.
 ## Quick start
 
 ```bash

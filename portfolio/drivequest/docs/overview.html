@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DriveQuest — POC overview</title>
+    <link rel="stylesheet" href="../site.css" />
+    <link rel="icon" href="../../favicon.ico" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="../">DriveQuest</a>
+      <nav><a href="./">Docs</a><a href="../demo.html">Demo</a></nav>
+    </header>
+    <main class="wrap">
+      <p class="eyebrow">Overview</p>
+      <h1>What DriveQuest is</h1>
+      <p class="lede">
+        An embeddable, honest car advisor: quest intake, hex radar, EV ROI, inventory scoped to a
+        <strong>dealer group</strong> (optional rooftop <strong>location</strong>).
+      </p>
+      <section class="panel">
+        <h2>In scope (POC)</h2>
+        <ul>
+          <li>FastAPI + static UI; LangChain when keyed, demo advisor otherwise</li>
+          <li>Multi-tenant groups + locations; Excel/CSV/paste ingest</li>
+          <li>Embed via <code>widget.js?group=&amp;location=</code> or iframe</li>
+          <li>Sample tenants: Northstar Motors, Lakeside EV &amp; Hybrid</li>
+        </ul>
+      </section>
+      <section class="panel">
+        <h2>Out of scope</h2>
+        <ul>
+          <li>DMS sync, real auth/RBAC, CRM/leads, production hosting on Pages</li>
+          <li>This GitHub Pages site is static — run uvicorn for the full plugin</li>
+        </ul>
+      </section>
+      <p><a class="btn ghost" href="./">← Docs index</a></p>
+    </main>
+  </body>
+</html>

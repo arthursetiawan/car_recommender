@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DriveQuest — embed &amp; tenancy</title>
+    <link rel="stylesheet" href="../site.css" />
+    <link rel="icon" href="../../favicon.ico" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="../">DriveQuest</a>
+      <nav><a href="./">Docs</a><a href="../demo.html">Demo</a></nav>
+    </header>
+    <main class="wrap">
+      <p class="eyebrow">Embed</p>
+      <h1>Group vs location</h1>
+      <p class="lede">
+        Primary tenant is the dealer <strong>group</strong>. Optional <strong>location</strong>
+        scopes inventory for a storefront site.
+      </p>
+      <section class="panel">
+        <h2>Install (full app host)</h2>
+        <pre><code>&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors" async&gt;&lt;/script&gt;
+&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors&amp;location=downtown" async&gt;&lt;/script&gt;</code></pre>
+        <p class="note">
+          <code>dealer=</code> aliases <code>group=</code>. Pages cannot host this widget’s API —
+          point <code>YOUR_HOST</code> at a running FastAPI deploy, or use the
+          <a href="../demo.html">static demo</a> here.
+        </p>
+      </section>
+      <section class="panel">
+        <h2>Sample IDs</h2>
+        <ul>
+          <li><code>northstar-motors</code> → <code>downtown</code>, <code>westside</code></li>
+          <li><code>lakeside-ev</code> → <code>harbor</code>, <code>lakefront</code></li>
+        </ul>
+      </section>
+      <p><a class="btn ghost" href="./">← Docs index</a></p>
+    </main>
+  </body>
+</html>

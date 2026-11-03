@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DriveQuest — static shopper demo</title>
+    <meta name="description" content="Client-side DriveQuest POC demo: quest chips, hex radar, sample dealer inventory. No server required." />
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="demo.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="./">DriveQuest</a>
+      <nav>
+        <a href="./">POC hub</a>
+        <a href="docs/">Docs</a>
+        <a href="../">Portfolio</a>
+      </nav>
+    </header>
+
+    <main class="demo-wrap">
+      <p class="badge">Static Pages demo · no FastAPI · sample lots only</p>
+      <div class="demo-bar">
+        <label>
+          Dealer group
+          <select id="group">
+            <option value="northstar-motors">Northstar Motors</option>
+            <option value="lakeside-ev">Lakeside EV &amp; Hybrid</option>
+          </select>
+        </label>
+        <label>
+          Location (optional)
+          <select id="location">
+            <option value="">All rooftops</option>
+          </select>
+        </label>
+        <button type="button" id="reset" class="btn primary">Restart quest</button>
+      </div>
+
+      <div class="demo-grid">
+        <section class="chat-panel">
+          <h1 id="dealer-title">Northstar Motors</h1>
+          <p class="sub" id="dealer-tagline">Honest picks from our lot — no pressure.</p>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <div id="choices" class="choices"></div>
+        </section>
+        <section class="radar-panel">
+          <h2>Hex compare</h2>
+          <canvas id="hex" width="420" height="420" aria-label="Hexagonal radar chart"></canvas>
+          <ul id="legend" class="legend"></ul>
+          <div id="best" class="best hidden"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="demo.js"></script>
+  </body>
+</html>

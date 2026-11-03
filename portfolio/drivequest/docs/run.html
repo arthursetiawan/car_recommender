@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DriveQuest — run locally</title>
+    <link rel="stylesheet" href="../site.css" />
+    <link rel="icon" href="../../favicon.ico" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="top">
+      <a class="brand" href="../">DriveQuest</a>
+      <nav><a href="./">Docs</a><a href="../demo.html">Demo</a></nav>
+    </header>
+    <main class="wrap">
+      <p class="eyebrow">Runbook</p>
+      <h1>Run the full POC locally</h1>
+      <section class="panel">
+        <pre><code>git clone https://github.com/arthursetiawan/car_recommender.git
+cd car_recommender
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend.app:app --host 0.0.0.0 --port 8000</code></pre>
+        <p class="note">
+          Open <code>/</code>, <code>/embed/northstar-motors</code>,
+          <code>/embed/northstar-motors/downtown</code>,
+          <code>/static/admin.html?group=northstar-motors</code>.
+          No OpenAI key → demo advisor. Optional: <code>export OPENAI_API_KEY=…</code>
+        </p>
+      </section>
+      <p><a class="btn ghost" href="./">← Docs index</a></p>
+    </main>
+  </body>
+</html>

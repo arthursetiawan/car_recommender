@@ -1,25 +1,28 @@
-# Arthur Setiawan — personal portfolio
+# Portfolio + DriveQuest Pages site
 
-Professional site for Arthur Setiawan — automotive-focused data scientist with
-production ML, data platform, and delivery experience.
+Static site deployed by GitHub Actions (`.github/workflows/pages.yml`) from this folder.
 
-## Preview
+## URLs
+
+| Surface | URL (after Pages is enabled on `car_recommender`) |
+|---------|-----------------------------------------------------|
+| Portfolio home | https://arthursetiawan.github.io/car_recommender/ |
+| DriveQuest POC hub | https://arthursetiawan.github.io/car_recommender/drivequest/ |
+| Static shopper demo | https://arthursetiawan.github.io/car_recommender/drivequest/demo.html |
+| POC docs (HTML) | https://arthursetiawan.github.io/car_recommender/drivequest/docs/ |
+
+Personal user site (separate repo, already live): https://arthursetiawan.github.io/  
+Sync this folder there with `./publish-to-github-io.sh` when you have write access — DriveQuest then also appears at `https://arthursetiawan.github.io/drivequest/`.
+
+## Preview locally
 
 ```bash
 cd portfolio
-python -m http.server 8080 --bind 127.0.0.1
+python3 -m http.server 8080 --bind 127.0.0.1
+# http://127.0.0.1:8080/  ·  /drivequest/  ·  /drivequest/demo.html
 ```
 
-## Publish to https://arthursetiawan.github.io/
+## Notes
 
-Requires write access to `arthursetiawan/arthursetiawan.github.io`:
-
-```bash
-./publish-to-github-io.sh
-```
-
-Or copy everything in this folder (except `publish-to-github-io.sh`) into that repo’s root and push `main`.
-
-## Alternate: project Pages on car_recommender
-
-The workflow at `.github/workflows/pages.yml` deploys this folder after Pages is enabled on the repo.
+- Pages is **static** — no FastAPI. Full embed/chat/ingest: run the repo with uvicorn (see `docs/runbook.md`).
+- First deploy may need the workflow’s `enablement: true` (or Settings → Pages → Source: GitHub Actions).
