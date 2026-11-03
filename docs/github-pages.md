@@ -1,38 +1,31 @@
 # DriveQuest on GitHub Pages
 
-## Live URLs (project Pages)
+## Motormarket pattern (what we mirrored)
+
+| | **Motormarket** | **DriveQuest** |
+|--|-----------------|----------------|
+| Live project Pages | https://arthursetiawan.github.io/motormarket/ | https://arthursetiawan.github.io/car_recommender/ |
+| Deploy | Actions → `docs/portfolio/` | Actions → `portfolio/` |
+| Portfolio entry | Hero + **Open Motormarket** / product band | Hero + **Open DriveQuest** / `#drivequest` band |
+| Hosted try-it | `/motormarket/` (+ auctions) | `/drivequest/` (+ `demo.html` shopper quest) |
+
+Motormarket repo: https://github.com/arthursetiawan/motormarket · workflow deploys static portfolio with nested product demo.
+
+## Live DriveQuest URLs
 
 | Page | URL |
 |------|-----|
-| Portfolio | https://arthursetiawan.github.io/car_recommender/ |
-| DriveQuest hub | https://arthursetiawan.github.io/car_recommender/drivequest/ |
-| Static shopper demo | https://arthursetiawan.github.io/car_recommender/drivequest/demo.html |
+| Portfolio (entry) | https://arthursetiawan.github.io/car_recommender/ |
+| Product landing | https://arthursetiawan.github.io/car_recommender/drivequest/ |
+| Shopper try-it | https://arthursetiawan.github.io/car_recommender/drivequest/demo.html |
 | Docs (HTML) | https://arthursetiawan.github.io/car_recommender/drivequest/docs/ |
 
-Personal site (separate repo): https://arthursetiawan.github.io/  
-To mirror the static POC under `/drivequest/` there: `portfolio/publish-to-github-io.sh` (needs write access to `arthursetiawan.github.io`).
+Personal site: https://arthursetiawan.github.io/ (separate repo). Sync with `portfolio/publish-to-github-io.sh` when you have write access.
 
-## Status
+## Deploy
 
-GitHub Pages is **enabled** on `car_recommender` with **GitHub Actions** as the source. Deploy workflow: `.github/workflows/pages.yml` (publishes the `portfolio/` folder).
-
-Re-deploy: push to `main` touching `portfolio/**` or the workflow file, or run **Actions → Deploy GitHub Pages → Run workflow** from the GitHub UI.
-
-## What’s published (`portfolio/`)
-
-- Portfolio home with DriveQuest CTAs → `drivequest/`
-- `drivequest/` hub — POC overview + how to run full FastAPI locally
-- `drivequest/demo.html` — client-side quest + hex radar (sample lots)
-- `drivequest/docs/` — HTML docs index + overview / embed / run / limitations
-
-## Preview locally
-
-```bash
-cd portfolio
-python3 -m http.server 8080 --bind 127.0.0.1
-# http://127.0.0.1:8080/drivequest/
-```
+`.github/workflows/pages.yml` publishes `portfolio/` on push to `main` (or **Actions → Deploy GitHub Pages**). Pages source: GitHub Actions.
 
 ## Limits
 
-GitHub Pages is static — no FastAPI, LangChain, or inventory upload API. Full plugin: [runbook.md](./runbook.md).
+Static only — no FastAPI on Pages. Full dealer-group plugin: [runbook.md](./runbook.md).

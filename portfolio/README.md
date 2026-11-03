@@ -4,6 +4,9 @@ Static site deployed by GitHub Actions (`.github/workflows/pages.yml`) from this
 
 ## URLs
 
+Same class of entry as [Motormarket](https://arthursetiawan.github.io/motormarket/): project Pages → product landing → hosted try-it.
+
+
 | Surface | URL (after Pages is enabled on `car_recommender`) |
 |---------|-----------------------------------------------------|
 | Portfolio home | https://arthursetiawan.github.io/car_recommender/ |
