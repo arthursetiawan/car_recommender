@@ -26,3 +26,8 @@ python3 -m http.server 8080 --bind 127.0.0.1
 
 - Pages is **static** — no FastAPI. Full embed/chat/ingest: run the repo with uvicorn (see `docs/runbook.md`).
 - First deploy may need the workflow’s `enablement: true` (or Settings → Pages → Source: GitHub Actions).
+
+## One-time Pages enable
+
+Repo **Settings → Pages → Source: GitHub Actions**, then re-run **Deploy GitHub Pages**.
+Until then the workflow cannot create the Pages site (GitHub token 403 on create).
