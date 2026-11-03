@@ -11,6 +11,12 @@
 
 Motormarket repo: https://github.com/arthursetiawan/motormarket · workflow deploys static portfolio with nested product demo.
 
+## Home button
+
+Every DriveQuest Pages surface (portfolio, `drivequest/` hub, shopper demo, docs, resume) includes a **Home** link to the user site: https://arthursetiawan.github.io/
+
+Motormarket (`arthursetiawan/motormarket`) was not editable from this agent (push 403) — add the same Home control there when you have write access.
+
 ## Live DriveQuest URLs
 
 | Page | URL |
