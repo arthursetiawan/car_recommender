@@ -84,6 +84,15 @@ body {
   color: #fff;
 }
 
+.top nav .nav-home {
+  font-weight: 800;
+  color: #ffd7bf;
+}
+
+.top nav .nav-home:hover {
+  color: #fff;
+}
+
 .top nav .nav-pill {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;

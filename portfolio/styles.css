@@ -211,6 +211,15 @@ body {
   transform: translateX(3px);
 }
 
+.nav-home {
+  font-weight: 800 !important;
+  color: #ffd7bf !important;
+}
+
+.nav-home:hover {
+  color: #fff !important;
+}
+
 .nav-cta {
   padding: 0.4rem 0.85rem;
   border-radius: 999px;
@@ -688,7 +697,7 @@ body {
     width: min(46%, 180px);
   }
 
-  .topnav a:not(.nav-resume):not(.nav-cta) {
+  .topnav a:not(.nav-resume):not(.nav-cta):not(.nav-home) {
     display: none;
   }
 
