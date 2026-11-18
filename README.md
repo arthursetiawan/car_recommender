@@ -5,6 +5,17 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-uvicorn-009688)](./backend/app.py)
 [![Docs](https://img.shields.io/badge/docs-POC%20suite-c47a22)](./docs/README.md)
 
+## Charter
+
+| | |
+|---|---|
+| **Product** | **DriveQuest** — multi-attribute vehicle advisor (conversational quest, hex scoring, EV tradeoffs, dealer-group embed). |
+| **North star** | A recruiter opens the hosted demo and grasps the shopper + dealer story in under two minutes. |
+| **Primary demo** | [drivequest hub](https://arthursetiawan.github.io/car_recommender/drivequest/) · [shopper try-it](https://arthursetiawan.github.io/car_recommender/drivequest/demo.html) |
+| **Full embed (API host)** | One-line `widget.js` + iframe — [`docs/embed-install.md`](./docs/embed-install.md) (requires a running FastAPI deploy, not GitHub Pages alone). |
+| **Companion repo (not merged here)** | **[Dealer-Counter AI](https://github.com/arthursetiawan/vehicle-negotiator-engine)** — worksheet fee audit, floor clamp, negotiation scripts. Same automotive hiring story; separate codebase and demo. |
+| **Non-goals** | Employer IP, inflated production claims, folding negotiation-audit logic into this recommender. |
+
 LangChain-powered car advisor that turns shopping into a progressive quest. You chat (or tap choice chips) to narrow budget, body type, priorities, and new/used — then compare contenders on a **hexagonal radar** across six axes:
 
 1. **Value** — deal quality vs market  

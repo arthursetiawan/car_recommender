@@ -15,28 +15,73 @@
     </header>
     <main class="wrap">
       <p class="eyebrow">Embed</p>
-      <h1>Group vs location</h1>
+      <h1>Install on a dealer site</h1>
       <p class="lede">
-        Primary tenant is the dealer <strong>group</strong>. Optional <strong>location</strong>
-        scopes inventory for a storefront site.
+        Primary tenant is the dealer <strong>group</strong> (<code>group=</code>). Optional
+        <strong>location</strong> scopes inventory to one rooftop. Full install reference in the
+        <a href="https://github.com/arthursetiawan/car_recommender/blob/main/docs/embed-install.md">repo <code>embed-install.md</code></a>.
       </p>
+
       <section class="panel">
-        <h2>Install (full app host)</h2>
-        <pre><code>&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors" async&gt;&lt;/script&gt;
-&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors&amp;location=downtown" async&gt;&lt;/script&gt;</code></pre>
+        <h2>GH Pages vs API host</h2>
+        <table class="simple-table">
+          <thead>
+            <tr><th>Goal</th><th>URL</th><th>Widget?</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Recruiter / shopper demo (static)</td>
+              <td><a href="../demo.html">demo.html</a></td>
+              <td>No — sample lots in-browser</td>
+            </tr>
+            <tr>
+              <td>Live embed on dealer website</td>
+              <td>Your FastAPI <code>YOUR_HOST</code></td>
+              <td>Yes — script or iframe below</td>
+            </tr>
+          </tbody>
+        </table>
         <p class="note">
-          <code>dealer=</code> aliases <code>group=</code>. Pages cannot host this widget’s API —
-          point <code>YOUR_HOST</code> at a running FastAPI deploy, or use the
-          <a href="../demo.html">static demo</a> here.
+          Pages does not run <code>/widget.js</code> or chat APIs. Dealer-Counter (fee audit) is a
+          <a href="https://github.com/arthursetiawan/vehicle-negotiator-engine">separate repo</a> — not part of this embed.
         </p>
       </section>
+
       <section class="panel">
-        <h2>Sample IDs</h2>
+        <h2>One-line script (recommended)</h2>
+        <pre><code>&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors" async&gt;&lt;/script&gt;
+
+&lt;script src="https://YOUR_HOST/widget.js?group=northstar-motors&amp;location=downtown" async&gt;&lt;/script&gt;</code></pre>
+        <p class="note"><code>dealer=</code> aliases <code>group=</code>. Optional <code>&amp;height=900</code> (default 820).</p>
+      </section>
+
+      <section class="panel">
+        <h2>Iframe</h2>
+        <pre><code>&lt;iframe
+  src="https://YOUR_HOST/embed/northstar-motors"
+  style="width:100%;max-width:1120px;height:820px;border:0;border-radius:16px"
+  title="DriveQuest"
+  loading="lazy"&gt;&lt;/iframe&gt;</code></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Sample tenants</h2>
         <ul>
           <li><code>northstar-motors</code> → <code>downtown</code>, <code>westside</code></li>
           <li><code>lakeside-ev</code> → <code>harbor</code>, <code>lakefront</code></li>
         </ul>
       </section>
+
+      <section class="panel">
+        <h2>Verify</h2>
+        <ol>
+          <li>Parent page shows the iframe; greeting names group/location + stock count.</li>
+          <li>Quest chips only surface cars from that tenant.</li>
+          <li>After ingest in admin, refresh — prices/VINs match latest inventory.</li>
+          <li>No backend? Use the <a href="../demo.html">static shopper demo</a> and switch lots in the header.</li>
+        </ol>
+      </section>
+
       <p><a class="btn ghost" href="./">← Docs index</a></p>
     </main>
   </body>

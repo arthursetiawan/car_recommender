@@ -2,6 +2,15 @@
 
 Drop DriveQuest onto a dealer website with a script tag or iframe. Primary query param is **group**; **location** is optional for a single rooftop.
 
+## GH Pages vs API host
+
+| What you want | Where | Embed script? |
+|---------------|-------|----------------|
+| **Recruiter / shopper story** (static quest, hex, EV ROI on sample lots) | [Hosted demo](https://arthursetiawan.github.io/car_recommender/drivequest/demo.html) | No — client-side only; no `widget.js` on Pages |
+| **Real dealer-site embed** (live inventory, chat API, ingest) | Your FastAPI host (`uvicorn` or container) | Yes — snippets below with `YOUR_HOST` set to that origin |
+
+GitHub Pages cannot serve `/widget.js`, `/embed/…`, or `/api/*`. Point integrators at a deployed backend; point recruiters at the hosted try-it link above. Negotiation worksheets and fee audit live in **[vehicle-negotiator-engine](https://github.com/arthursetiawan/vehicle-negotiator-engine)** (Dealer-Counter) — not in this install path.
+
 ## One-line script (recommended)
 
 **Whole dealer group** (all locations’ inventory):
@@ -80,7 +89,19 @@ Pulled from `group.json` → CSS variables on the embed (`--copper`, `--teal`, t
 
 ## Verify install
 
-1. Load the host page; iframe appears under the script.
-2. Greeting mentions the group/location and inventory count.
-3. Chip through budget; contenders should only be that tenant’s cars.
-4. Change inventory in admin; refresh embed — lot should update.
+**FastAPI embed (dealer integrator)**
+
+1. Load the parent page over HTTPS (or `localhost`); the iframe appears after the script runs.
+2. Greeting names the **group** (and **location** when set) and shows an inventory count.
+3. Tap budget → body type → priority; shortlist cars must belong to that tenant only.
+4. Upload or paste ingest in [`/admin`](http://localhost:8000/admin.html); refresh embed — VINs/prices should match the latest `inventory.json`.
+5. Optional: `curl -s http://YOUR_HOST/health` returns OK while the embed is in use.
+
+**Recruiter smoke (no backend)**
+
+1. Open [demo.html](https://arthursetiawan.github.io/car_recommender/drivequest/demo.html).
+2. Switch **Northstar Motors** vs **Lakeside EV** — lot and branding change.
+3. Complete the quest chips; hex chart renders for the shortlist.
+4. Expand **EV vs gas ROI** — break-even updates when miles/year changes.
+
+Hosted embed docs (HTML): [drivequest/docs/embed.html](https://arthursetiawan.github.io/car_recommender/drivequest/docs/embed.html).
