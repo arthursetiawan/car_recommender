@@ -5,6 +5,20 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-uvicorn-009688)](./backend/app.py)
 [![Docs](https://img.shields.io/badge/docs-POC%20suite-c47a22)](./docs/README.md)
 
+## Business outcome
+
+**Problem:** Shoppers face choice overload — dozens of similar listings and no clear tradeoff story.
+
+**Hook:** *3 cars that fit how you drive* — a short budget → body → priority quest scores **this dealer’s inventory** on six axes and returns a compare-ready shortlist (see [problem brief](./docs/problem.md) and [shopper funnel](./docs/shopper_funnel.md)).
+
+**Evidence (iter 2):** EDA on the public catalog fixture ([`reports/drivequest_eda_summary.md`](./reports/drivequest_eda_summary.md)) shows persona-driven priority weights change top-3 rankings without retraining; budget chips collapse eligible units before scoring (`python scripts/drivequest_eda.py` to refresh).
+
+| KPI (target) | POC signal |
+|--------------|------------|
+| Time-to-shortlist ↓ | Six quest stages → top 3 on hex radar |
+| Embed engagement | Compare stage + best-match decision |
+| Inventory fit | Scores derived from dealer-uploaded fields only |
+
 ## Charter
 
 | | |

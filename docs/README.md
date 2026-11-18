@@ -6,6 +6,8 @@ Proof-of-concept docs for **DriveQuest** — an honest, embeddable car advisor s
 
 | Doc | What it covers |
 |-----|----------------|
+| [problem.md](./problem.md) | Choice overload, customer hook, success metrics |
+| [shopper_funnel.md](./shopper_funnel.md) | Quiz → hex scores → shortlist (dealer + shopper narrative) |
 | [poc-overview.md](./poc-overview.md) | Vision, who it’s for, what’s in/out for the POC |
 | [architecture.md](./architecture.md) | Group/location tenancy, embed, LangChain advisor, hex, ROI |
 | [shopper-experience.md](./shopper-experience.md) | Quest, chat, hex radar, EV ROI from the buyer’s view |
